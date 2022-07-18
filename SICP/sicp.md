@@ -120,7 +120,59 @@ Each combination is represented by a node with branches corresponding to the ope
 
 ![](chap1/ch1-Z-G-1.svg)
 
+Observe that the repeated application of the first step brings us to the point where we need to evaluate, not combination , but primitive expressions such as numerals or names. We take care of the primitive cases by stipulating that
 
+* the values of numerals are the numbers that they name, and 
+* the values of names are the objects associated with those names in the environment
+
+The key point to notice is the role of the environment in determining the meaning of the names in expressions. In an interactive language such as JavaScript, it is meaningless to speak of the value of an expression such as x + 1 without specifying any information about the environment that would provide a meaning for the name x. The general notion of the environment as providing a context in which evaluation takes place will play an important role in our understanding of program execution.
+
+The purpose of the declaration (const x = 3) is precisely to associate x with a value.(That is, const x = 3; is not a combination.)
+
+The word const is a keyword in JS. Keywords carry a particular meaning, and thus cannot be used as names.
+
+A keyword or a combination of keywords in a statement instructs the JavaScript interpreter to treat the statement in a special way.
+
+Each such syntactic from has its own evaluation rule. The various kinds of statements and expressions (each with its associated evaluation rule) constitute the syntax of the programming language.
+
+
+
+### Compound Functions
+
+We have identified in JavaScript some of the elements that must appear in any powerful programming language:
+
+* Numbers and arithmetic operations are primitive data and functions
+* Nesting of combinations provides a means of combining operations
+* Constant declarations that associate means with values provide a limited means of abstraction
+
+Now we will learn about function declarations, a much powerful abstraction technique by which a compound operation can be given a name and then referred to as a unit.
+
+We begin by examining how to express the idea of "squaring". We might say, "To square something, take it times itself."This is expressed in our language as
+
+``` js
+function square(x) {
+  return x * x;
+}
+```
+
+``` txt
+function square(    x   ) { return x    *     x; }
+//  ^       ^       ^         ^    ^    ^     ^
+// To    square something,  take   it times itself.
+```
+
+The simplest form of a function declaration is 
+
+``` txt
+function name(parameters) { return expression; }
+```
+
+Having declared *square*, we can now use it in a function application expression
+
+``` js
+square(21);
+// 441
+```
 
 
 
