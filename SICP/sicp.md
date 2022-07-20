@@ -174,7 +174,50 @@ square(21);
 // 441
 ```
 
+Function applications are-after operator combinations-the second kind of combination of expression into large expressions.The general form of a function application is
 
+``` text
+function-expression( argument-expressions )
+```
+
+Where the function-expression of the application specifies the function to be applied to the comma-separated argument-expressions.
+
+* To evaluate a function application, do the following:
+
+  1. Exaluate the subexpressions of the application, namely the function expression and the argument expressions
+  2. Apply the function that is the value of the function expression to the values of the argument expression.
+
+  ``` js
+  square(2 + 5);
+  // 49
+  ```
+
+  Of course function application expressions can also serve as argument expressions.
+
+  ``` text
+  square(x) + square(y)
+  ```
+
+  Declare a function *sum_of_squares* that, given any two numbers as arguments,produces the sum of their squares:
+
+  ``` js
+  function sum_of_squares(x, y) {
+    return square(x) + square(y);
+  }
+  
+  sum_of_square(3,4);
+  ```
+
+  Now we can use sum_of_squares as a building block in constructinf future functions:
+
+  ``` js
+  function f(a) {
+    return sum_of_squares(a + 1, a * 2);
+  }
+  f(5);
+  ```
+
+  In addition to compound functions, any JS environment provides primitive functions that are build into the interpreter or loaded from libraries. Indeed, one could not tell by looking at the definition of *sum_of_squares* given above whether *square* was build into the interpreter, loaded from a library, or defined as a compound function.
 
 ## Reference 
 
