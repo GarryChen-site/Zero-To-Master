@@ -219,6 +219,68 @@ Where the function-expression of the application specifies the function to be ap
 
   In addition to compound functions, any JS environment provides primitive functions that are build into the interpreter or loaded from libraries. Indeed, one could not tell by looking at the definition of *sum_of_squares* given above whether *square* was build into the interpreter, loaded from a library, or defined as a compound function.
 
+
+
+### The Substitution Model for Function Application
+
+To evaluate a function application, the interpreter evaluates the elements of the application and applies the function (which is the value of the function expression of the application) to the arguments (which are the values of the argument expressions of the application).
+
+We can assume that the application of primitive functions is handed by the interpreter or libraries. For compound functions, the application process is as follows:
+
+* To apply a compound function to arguments, evaluate the return expression of the function with each parameter replaced by the corresponding argument
+
+Let's evaluate the application
+
+``` js
+f(5)
+```
+
+We begin by retrieving the return expression of f:
+
+``` text
+sum_of_squares(a + 1, a * 2)
+```
+
+Then we replace the parameter a by the argument 5:
+
+``` text
+sum_of_squares(5 + 1, 5 * 2)
+```
+
+Thus the problem reduces to the evaluation of an application with two arguments and a functionc expression *sum_of_squares*.Evaluating this application involves three subproblems. We must evaluate the function expression to get the function to be applied, and we must evaluate the argument expressions to get the arguments. Now *5 + 1* produces 6 and *5* * *2* produces 10, so we must apply the *sum_of_squares* function to 6 and 10. These values are substituted for the parameters x and y in the body of *sum_of_squares*,reducing the expression to 
+
+``` text
+square(6) + square(10)
+```
+
+If we used the declaration of *square*, this reduces to 
+
+``` text
+(6 * 6) + (10 * 10)
+```
+
+which reduces by multiplication to 
+
+``` text
+36 + 100
+```
+
+and finally to 
+
+``` text
+136
+```
+
+The process we have just described is called the *substitution model* for function application. It can be taken as a model that determinis the "meaning" of function application, in so far.
+
+
+
+
+
+
+
+
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
