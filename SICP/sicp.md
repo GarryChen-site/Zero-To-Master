@@ -301,11 +301,53 @@ JS uses applicative-order evaluation,partly because of the additional efficiency
 
 
 
+### Conditional Expressions and Predicates
 
+Case analysis can be written in JS usiing a conditional expression as 
 
+``` js
+function abs(x) {
+  return x >= 0 ? x : - x;
+}
+```
 
+which could be expressed as "If x is great than or equal to zero, return x; otherwise return -x"
 
+The general form of a conditional expression is 
 
+``` text
+predicate ? consequent-expression : alternative-expression
+```
+
+Conditional expressions begin with a predicate-that is, an expression whose value is either true or false
+
+To evaluate a conditional expression, the interpreter starts by evaluating the predicate of the expression.If the predicate evaluates to true, the interpreter evalautes the *consequent-expression* and return its value as the value of the conditional.If the predicate evaluates to false, it evaluates the *alternative-expression* and returns its value as the value of the conditional.
+
+The word *predicate* is used for operators and functions that return true or false, as well as for expressions that evaluate to true or false.
+
+If we prefer to handle the zero case separately, in js, we can express 
+
+``` js
+function abs(x) {
+  return x > 0
+  			? x
+  			: x === 0
+  			? 0
+  			: -x;
+}
+```
+
+In addition to primitive predicates such as >=, >, <, <=, ===, and !== that are applied to numbers, there are logical composition operations ,which enable us to construct compound predicates. The three most frequently used are these:
+
+* *expression1 && expression2*
+
+  This operation expresses *logic conjunction*, meaning roughly the same as the English word "and". This syntactic form is syntactic sugar for *expression1 ? expression2 : false*
+
+* *expression1 || expression2*
+
+* *! expression*
+
+  
 
 ## Reference 
 
