@@ -345,9 +345,37 @@ In addition to primitive predicates such as >=, >, <, <=, ===, and !== that are 
 
 * *expression1 || expression2*
 
+  This operation expresses *logic disjunction*, meaning roughly the same as the English word "or". This syntactic form is syntactic sugar for *expression1 ? true : expression2 *
+
 * *! expression*
 
-  
+  This operation expresses *logic negation*, meaning roughly the same as the English word "not".The value of the expression is true when *expression* evalautes to false, and false when *expression* evaluates to true.
+
+As an example of how these predicates are used, the condition that a number *x* can be in range *5<x<10* may be expressed as
+
+``` text
+x > 5 && x < 10
+```
+
+The syntactic form *&&* has low precedence than the comparison operators > and <
+
+As another example, we can declare a predicate to test whether one number is greater than or equal to another as
+
+``` js
+function greater_or_equal(x, y) {
+  return x > y || x === y
+}
+```
+
+or alternatively as
+
+``` js
+function greater_or_equal(x, y) {
+  return !(x < y)
+}
+```
+
+The function *greater_or_equal*, when applied to two numbers, behaves the same as the operator >=. Unary operators have higher precedence than binary operators, which makes the parentheses in this example necessary.
 
 ## Reference 
 
