@@ -377,6 +377,24 @@ function greater_or_equal(x, y) {
 
 The function *greater_or_equal*, when applied to two numbers, behaves the same as the operator >=. Unary operators have higher precedence than binary operators, which makes the parentheses in this example necessary.
 
+
+
+#### Exercise 1.1
+
+#### Exercise 1.2
+
+#### Exercise 1.3
+
+#### Exercise 1.4
+
+#### Exercise 1.5
+
+
+
+### Example: Square Roots by Newtom's Method
+
+Functions, as introduced above, are much like ordinary mathematical functions. They specify a value that is determined by one or more parameters.But there is an important difference between mathematical functions and computer functions.Computer functions must be effective.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
