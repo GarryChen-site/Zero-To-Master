@@ -395,6 +395,20 @@ The function *greater_or_equal*, when applied to two numbers, behaves the same a
 
 Functions, as introduced above, are much like ordinary mathematical functions. They specify a value that is determined by one or more parameters.But there is an important difference between mathematical functions and computer functions.Computer functions must be effective.
 
+As a case in point, consider the problem of computing square roots. We can define the square-root function as 
+
+![](chap1/ch1-1.1.7-square-root.png)
+
+This describes a perfectly legitimate mathematical function. But, the definition does not describe a computer function.Indeed, it tells us almost nothing about how to actually find the square root of a given number.It will not help matters to rephrase this defintion in pseudo-JS
+
+``` js
+function sqrt(x) {
+  return the y with y >= 0 && square(y) === x;
+}
+```
+
+The contrast between mathematical function and computer function is a reflection of the general distinction between describing properties of things and describing how to do things, or, as it is sometimes referred to, the distinction between declarative knowledge and imperative knowledge . In mathematics we are usually concerned with declarative (what is) description, whereas in computer science we are usually concerned with imperative (how to) descriptions.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
