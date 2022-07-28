@@ -409,6 +409,64 @@ function sqrt(x) {
 
 The contrast between mathematical function and computer function is a reflection of the general distinction between describing properties of things and describing how to do things, or, as it is sometimes referred to, the distinction between declarative knowledge and imperative knowledge . In mathematics we are usually concerned with declarative (what is) description, whereas in computer science we are usually concerned with imperative (how to) descriptions.
 
+How does one compute square roots? The most common way is to use Newton's method of successive approximations, which says that whenever we have a guess *y* for the value of the square root of a number *x*, we can perform a simple manipulation to get a better guess (one closer to the actual square root) by averaging *y* with *x/y*.
+
+For example, we can compute the square root of 2 as follows. Suppose our initial guess is 1:
+
+ 
+
+| Guess  |     Quotient      |          Average           |
+| :----: | :---------------: | :------------------------: |
+|   1    |      2/1 = 2      |       (2+1)/2 = 1.5        |
+|  1.5   |  2/1.5 = 1.3333   |  (1.3333+1.5)/2 = 1.4167   |
+| 1.4167 | 2/1.4167 = 1.4118 | (1.4167+1.4118)/2 = 1.4142 |
+
+Now let's formalize the process in terms of functions. We start with a value for the radicand(the number whose square root we are trying to compute) and a value for the guess.If the guess is good enough for our purposes, we are done; if not, we must repeat the process with an improved guess.
+
+``` js
+function sqrt_iter(guess, x) {
+  return is_good_enough(guess, x)
+  			? guess
+  			: sqrt_iter(improve(guess, x), x);
+}
+```
+
+
+
+A guess is improved by averaging it with the quotient fo the radicand and the old guess:
+
+``` js
+function improve(guess, x) {
+  return average(guess, x / guess)
+}
+```
+
+where
+
+``` js
+function average(x, y) {
+  return (x + y) / 2;
+}
+```
+
+We also have to say that we mean by "good enough." The idea is to improve the answer until it is close enough so that its square differs from the radicand by less than a predetermined tolerance (here 0.001)
+
+``` js
+function is_good_enoufh(guess, x) {
+  return abs(square(guess) - x) < 0.001;
+}
+```
+
+Finally, we need a way to get started. For instance, we can always guess that the square root of any number is 1:
+
+``` js
+function sqrt(x) {
+  return sqrt_iter(1, x)
+}
+```
+
+The function *sqrt_iter*, demonstrates how iteration can be accomplished using no special construct other than the ordinary ability to call a function.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
