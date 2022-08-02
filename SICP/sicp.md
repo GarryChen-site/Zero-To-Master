@@ -540,6 +540,75 @@ A parameter of a functino has a very special role in the function declaration , 
 
 In the declaration of *is_good_enough* above, *guess* and *x* are bound names but *abs* and *square* are free. The meaning of *is_good_enough* should be independent of the names we choose for *guess* and *x* so long as they are distinct and different from *abs* and *square*.(If we renamed *guess* and *abs* we would have introduced a bud by *capturing* the name *abs*. It would have changed from free to bound.) The meaning of *is_good_enough* is not indepent of the choice of its free names,however. It surely depends upon the face(external to this declaration) that the name *abs* refers to a function for computing the absolute value of a number. The function *is_good_enough* will compute a different function if we substitute *math_cos* (the primitive cosine function) for *abs* in its declaration . 
 
+
+
+#### Internal declarations and block structure
+
+We have one kind of name isolation available to us so far: The parameters of a function are local to the body of the function.The square-root program illustrates another way in which we would like to control the use of names. 
+
+``` js
+function sqrt(x) {
+  return sqrt_iter(1,x);
+}
+function sqrt_iter(guess, x) {
+  return is_good_enough(guess,x)
+  			 ? guess
+  			 : sqrt_iter(improve(guess, x), x);
+}
+function is_good_enough(guess, x) {
+  return abs(square(guess) - x ) < 0.001;
+}
+function improve(guess, x) {
+    return average(guess, x / guess);
+} 
+```
+
+The problem with this program is that the only function that is important to users of *sqrt* is *sqrt*. The other functions(sqrt_iter, is_good_enough, and improve) only clutter up their minds.
+
+We would like to localize the subfunctions, hiding them inside *sqrt* so that *sqrt* could coexit with other successive approximations, each having its own private *is_good_enough* function. To make this possible, we allow a function to have internal declarations that are local to that function.
+
+``` js
+function sqrt(x) {
+    function is_good_enough(guess, x) {
+        return abs(square(guess) - x) < 0.001;
+    }
+    function improve(guess, x) {
+        return average(guess, x / guess);
+    }
+    function sqrt_iter(guess, x) {
+        return is_good_enough(guess, x) 
+               ? guess
+               : sqrt_iter(improve(guess, x), x);
+    }
+    return sqrt_iter(1, x);
+} 
+```
+
+Any matching pair of braces designates a *block*, and declarations inside the block are local to the block. Such nesting of declarations, called *block structure*, is basically the right solution to the simplest name-packaging problem.
+
+In addition to internalizing the declarations of the auxiliary functions, we can simplify them.
+
+``` JS
+function sqrt(x) {
+    function is_good_enough(guess) {
+        return abs(square(guess) - x) < 0.001;
+    }
+    function improve(guess) {
+        return average(guess, x / guess);
+    }
+    function sqrt_iter(guess) {
+        return is_good_enough(guess)
+               ? guess
+               : sqrt_iter(improve(guess));
+    }
+    return sqrt_iter(1);
+} 
+```
+
+We will use block structure extensively to help us break up large programs into tractable pieces.
+
+It appears in most advanced programming languages and is an important tool for helping to organize the construction of large programs.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
