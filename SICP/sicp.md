@@ -686,6 +686,44 @@ The contrast between the two processes can be seen in another way. In the iterat
 
 In contrasting iteration and recursion, we must be careful not to confuse the notion of a recursive *process* with the notion of a recursive *function*. When we describe a function as recursive, we are referring to the syntactic fact that the function declaration refers (either directly or indirectly) to the function itself. But when we describe a process as following a pattern that is, say, linearly recursive, we are speaking about how the process evolves, not about the syntax of how a function is written. It may seem disturbing that we refer to a recursive function such as `fact_iter` as generating an iterative process. However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three names in order to execute the process.
 
+
+
+### Tree Recursion
+
+Another common pattern of computation is called *tree recursion*. As an example, consider computing the sequence of Fibonacci numbers,  in which each number is the sum of the preceding two:     
+
+``` txt
+0, 1, 1, 2, 3, 5, 8, 13, 21,...
+```
+
+In general, the Fibonacci numbers can be defined by the rule    
+
+``` txt
+            0                       if n = 0
+Fib(n) =    1                       if n = 1
+            Fib(n-1) + Fib(n-2)     otherwise
+```
+
+We can immediately translate this definition into a recursive function for computing Fibonacci numbers:
+
+``` js
+function fib(n) {
+  return n === 0 
+  			? 0
+  			: n === 1
+  			? 1
+  			: fib(n-1) + fib(n-2);
+}
+```
+
+![](chap1/ch1-1.2.2-fig1.10.png)
+
+Consider the pattern of this computation. To compute fib(5), we compute fib(4) and fib(3). To compute fib(4), we compute fib(3) and fib(2).In general, the evolved process looks like a tree.Notice that the branches split into two at each level (except at the bottom); this reflects the fact that the fib function calls itself twice each time it is invoked.
+
+This function is instructive as a prototypical tree recursion, but it is a terrible way to compute Fibonacci numbers because it does so much redundant computation.
+
+Thus, the process uses a number of steps that grows exponentially with the input. On the other hand, the space required grows only linearly with the input, because we need keep track only of which nodes are above us in the tree at any point int the computation. In general, the number of steps required by a tree-recursive process will be proportional to the number of nodes in the tree, while the space required will be proportional to the maximum depth of the tree.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
