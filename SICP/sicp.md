@@ -749,6 +749,65 @@ The second muthod for computing Fib(n) is a liner iteration. The difference in n
 
 One should not conclude from this that tree-recursive processes are useless. When we consider processes that operate on hierarchically structured data rather than numbers, we wii find that tree recursion is a natural and powerful tool. But even in numerical operations, tree-recursive processes can be useful in helping us to understand and design programs. For instance, although the first *fib* function is much less efficient than the second one, it is more straightforward , being little more than a translation into JS of the definition of the Fibonacci sequence. To formulate the iterative algorithm required noticing that the computation could be recast as an iteration with three state variables .
 
+
+
+### Example: Counting change
+
+It takes only a bit of cleverness to come up with the iterative Fibonacci algorithm. In contrast, consider the following problem: How many different ways can we make change of $1.00(100 cents), given half-dollars, quarters, dimes, nickels, and pennies(50 cents, 25cents, 10cents, 5 cents, and 1 cent, respectively)? More generally, can we write a function to compute the number of ways to change any given amount of money?
+
+This probelm has a simple solution as a recursive function. Suppose we think of the types of coins available as arranged in some order. Then the following relation holds:
+
+> The nubmer of ways to change amount *a* using *n* kinds of coins equals
+>
+> * the number of ways to change amount *a* using all but the first kind of coin, plus
+> * the number of ways to change amount *a* - *d* using all *n* kinds of coins, where *d* is the denomination of the first kind of coin.
+
+To see why this is true, observe that the ways to make change can be divided into two groups: those that do not use any of the first kind of coin, and those that do. Therefore, the total number of ways to make change for some amount is equal to the number of ways to make change for the amount without using any of the first kind of coin, plus the number of ways to make change assuming that we do use the first kind of coin. But the latter number is equal to the number of ways to make change for the amount that remains after using a coin of the first kind.
+
+Thus, we can recursively reduce the problem of changing a given amount to problems of changing smaller amounts or using fewer kinds of coins. Consider this reduction rule carefully, and convince yourself that we can use it to describe an algorithm if we specify the following degenerate cases:
+
+* If *a* is exactly 0, we should count that as 1 way to make change
+* If *a* is less than 0, we should count that as 0 ways to make change
+* If *n* is 0, we should count that as 0 ways to make change
+
+We can easily translate this description into a recursive function:
+
+``` js
+function count_change(amount) {
+  return cc(amount, 5)
+}
+
+function cc(amount, kinds_of_coins) {
+  return amount === 0 
+  			? 1
+  			: amount < 0 || kinds_of_coins === 0
+  			? 0
+  			: cc(amount, kinds_of_coins - 1)
+  				+ 
+    			cc(amount - first_denomination(kinds_of_coins),
+            kinds_of_coins);
+}
+
+function first_denamination(kinds_of_coins) {
+      return kinds_of_coins === 1 ? 1
+         : kinds_of_coins === 2 ? 5
+         : kinds_of_coins === 3 ? 10
+         : kinds_of_coins === 4 ? 25
+         : kinds_of_coins === 5 ? 50
+         : 0;  
+}
+```
+
+(The first_denomination function takes as input the number of kinds of coins available and returns the denomination of the first kind. Here we are thinking of the coins as arranged in order from largest to smallest, but any order would do as well.)
+
+We can now answer our original question about changing a dollar:
+
+``` js
+count_change(100);
+```
+
+The function *count_change* generates a tree-recursive process with redundancies similar to those in our first implementation of *fib*. 
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
