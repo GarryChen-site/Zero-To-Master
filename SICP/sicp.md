@@ -808,6 +808,12 @@ count_change(100);
 
 The function *count_change* generates a tree-recursive process with redundancies similar to those in our first implementation of *fib*. 
 
+### Orders of Growth
+
+The previous examples illustrate that processes can differ considerably in the rates at which they consume computational resources.  One convenient way to describe this difference is to use the notion of *order of growth* to obtain a gross measure of the resources required by a process as the inputs become larger.
+
+For instance, with the linear recursive process for computing factorial described in section 1.2.1 the number of steps grows proportionally to the input *n*.  Thus, the steps required for this process grows as Θ(n).  We also saw that the space required grows as Θ(n). For the iterative factorial, the number of steps is still Θ(n) but the space is Θ(1)—that is, constant.The tree-recursive Fibonacci computation requires Θ(ϕ^n) steps and space Θ(n), where ϕ is the golden ratio described in section 1.2.2.  
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
