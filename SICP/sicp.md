@@ -814,6 +814,45 @@ The previous examples illustrate that processes can differ considerably in the r
 
 For instance, with the linear recursive process for computing factorial described in section 1.2.1 the number of steps grows proportionally to the input *n*.  Thus, the steps required for this process grows as Θ(n).  We also saw that the space required grows as Θ(n). For the iterative factorial, the number of steps is still Θ(n) but the space is Θ(1)—that is, constant.The tree-recursive Fibonacci computation requires Θ(ϕ^n) steps and space Θ(n), where ϕ is the golden ratio described in section 1.2.2.  
 
+
+
+### Exponentiation
+
+Consider the problem of computing the exponential of a given number. We would like a function that takes as arguments a base *b* and a positive integer exponent *n* and computes b^n. One way to do this is via recursive definition
+
+``` txt
+b^n = b * b^n-1
+b^0 = 1
+```
+
+which translates readily into the function 
+
+``` js
+function expt(b, n) {
+  return n === 0 
+  			? 1
+  			: b * expt(b, n - 1);
+}
+```
+
+This is a linear recursive process, which requires Θ(n) steps and Θ(n) space.
+
+``` js
+function expt(b, n) {
+  return expt_iter(b, n, 1);
+}
+
+function expt_iter(b, counter, product) {
+  return counter === 0 
+  			? product
+  			: expt_iter(b, counter - 1, b * product);
+}
+```
+
+This version requires Θ(n) steps and  Θ(1) space.
+
+  
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
