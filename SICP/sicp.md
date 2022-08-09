@@ -851,7 +851,43 @@ function expt_iter(b, counter, product) {
 
 This version requires Θ(n) steps and  Θ(1) space.
 
-  
+We can compute exponentials in fewer steps by using successive squaring. For instance, rather than computing b^8 as 
+
+``` txt
+b * (b *(b *(b *(b *(b *(b * b))))))
+```
+
+  We can compute it using three multiplications:
+
+``` txt
+b^2 = b * b
+b^4 = b^2 * b^2
+b^8 = b^4 * b^4
+```
+
+This method works fine for exponents that are powers of 2.  We can also take  advantage of successive squaring in computing exponentials in general if we  use the rule    
+
+``` txt
+b^n = (b^n/2)^2				if n is even
+b^n = b * b^(n-1)			if n is odd
+```
+
+We can express this method as a function:
+
+``` js
+function fast_expt(b, n) {
+  return n === 0 
+  			? 1
+  			: is_even(n)
+  			? square(fast_expt(b, n/2))
+  			: b * fast_expt(b, n - 1);
+}
+function is_even(n) {
+  return n % 2 === 0;
+}
+```
+
+The process evolved by *fast_expt* grows logarithmically with *n* in both space and number of steps. 
 
 ## Reference 
 
