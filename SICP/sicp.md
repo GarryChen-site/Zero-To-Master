@@ -889,6 +889,42 @@ function is_even(n) {
 
 The process evolved by *fast_expt* grows logarithmically with *n* in both space and number of steps. 
 
+
+
+### Greatest Common Divisors
+
+The greatest common divisor (GCD) of two integers *a* and *b* is defined to be the largest integer that divides both *a* and *b* with no remainder.For example, the GCD og 16 and 28 is 4. One way to find the GCD of two integers is to factor them and search for common factors, but there is a famous algorithm that is much more efficient.
+
+The idea of the algorithm is based on the observation that, if *r* is the remainder when *a* is divided by *b*, then the common divisors of *a* and *b* are precisely the same as the common divisors of *b* and *r*.Thus, we can use the equation 
+
+``` txt
+GCD(a,b) = GCD(b,r)
+```
+
+to successively reduce the problem of computing a GCD to the problem of computing the GCD of smaller and smaller pairs of integers. For example,
+
+``` txt
+GCD(206, 40) = GCD(40, 6)
+						 = GCD(6, 4)
+						 = GCD(4, 2)
+						 = GCD(2, 0)
+						 = 2
+```
+
+reduces GCD(206, 40) to GCD(2, 0), which is 2. It is possible to show that starting with any two positive integers and performing repeated reductions will always eventually produce a pair where the second number is 0. Then the GCD is the other number in the pair. This method for computing the GCD is know as *Euclid*'s Algorithm.
+
+It is easy to express Euclid's Algorithm as a function:
+
+``` js
+function gcd(a, b) {
+  return b === 0 ? a : gcd(b, a % b);
+}
+```
+
+This generates an iterative process, whose number of steps grows as the logarithm of the numbers involved.
+
+> **Lame's Theorem** :If Euclid's Algorithm requires *k* steps to compute the GCD of some pair, then the smaller number in the pair must be greater than or equal to the *k*th Fibonacci number.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
