@@ -925,6 +925,43 @@ This generates an iterative process, whose number of steps grows as the logarith
 
 > **Lame's Theorem** :If Euclid's Algorithm requires *k* steps to compute the GCD of some pair, then the smaller number in the pair must be greater than or equal to the *k*th Fibonacci number.
 
+
+
+### Example: Testing for Primality
+
+The section describes two methods for checking the primality of an integer *n*
+
+#### Searching for divisors
+
+Since ancient times, mathematicians have been fascinated by problems concerning prime numbers, and many people have worked on the problem of determining ways to test if numbers are prime. The following program finds the samllest integral divisor (greater than 1) of a given number *n*. It does this in a straightforward way, by testing *n* for divisibility by successive integers starting with 2.
+
+``` js
+function smallest_divisor(n) {
+  return find_divisor(n, 2);
+}
+function find_divisor(n, test_divisor) {
+  return square(test_divisor) > n
+  			? n
+  			: divides(test_divisor, n)
+  			? test_divisor
+  			: find_divisor(n, test_divisor + 1)
+}
+
+function divides(a, b) {
+  return b % a === 0;
+}
+```
+
+We can test whether a nubmer is prime as follows: *n* is prime if and only if *n* is its own smallest divisor.
+
+``` js
+function is_prime(n) {
+  return n === smallest_divisor(n);
+}
+```
+
+
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
