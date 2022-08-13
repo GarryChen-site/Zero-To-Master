@@ -960,7 +960,81 @@ function is_prime(n) {
 }
 ```
 
+## Formulating Abstractions with Higher-Order Functions
 
+We have seen that functions are, in effect, abstractions that describe compound operations on numbers independent of the 
+particular numbers. For example, when we declare
+```js
+function cube(x) {
+    return x * x * x;
+}
+```
+we are not talking about the cube of a particular number, but rather about a method for obtaining the code of any number.
+Of course get along without ever declaring this function, by always writing expressions such as
+```text
+3 * 3 * 3
+x * x * x
+y * y * y
+```
+are never mentioning *cube* explicitly. This would place us at a serious disadvantage, forcing us to work always at the 
+level of the particular operations that happen to be primitives in the language (multiplication, in this case) rather than 
+in terms of higher-level operations. Our programs would be able to compute cubes, but our language would lack the ability 
+to express the concept of cubing.One of the things we should demand from a powerful programming language is the ability to 
+build abstractions by assigning names to common patterns and then to work in terms of the abstractions directly.Functions 
+provide this ability. This is why all but the most primitive programming languages include mechanisms for declaring functions.
+
+Yet even in numerical processing we will be severely limited in our ability to create abstractions if we are restricted to 
+functions whose parameters must be numbers. Often the same programming pattern will be used with a number of different functions. 
+To express such patterns as concepts, we will need to construct functions that can accept functions as arguments or return 
+functions as values.Functions that manipulate functions are called *higher-order* functions.
+
+### Functions as Arguments
+
+Consider the following three functions. The first computes the sum of the integers from *a* through *b*:
+```js
+function sum_integers(a, b) {
+    return a > b
+            ? 0
+            : a + sum_integers(a + 1, b);
+}
+```
+The second computes the sum of the cubes of the integers in the given range:
+```js
+function sum_cubes(a, b) {
+    return a > b
+           ? 0
+           : cube(a) + sum_cubes(a + 1, b);
+} 
+```
+The third computes the sum of a sequence of terms in the series
+```js
+function pi_sum(a, b) {
+    return a > b
+           ? 0
+           : 1 / (a * (a + 2)) + pi_sum(a + 4, b);
+}
+```
+These three functions clearly share a common underlying pattern. They are for the most part identical, differing only in 
+the name of the function, the function of *a* used to compute the term to be added, and the function that provides the 
+next value of *a*. We could generate each of the functions by filling in slots in the same template:
+```text
+function name(a, b) {
+    return a > b
+           ? 0
+           : term(a) + name(next(a), b);
+}
+```
+The presence of such a common pattern is strong evidence that there is a useful abstraction waiting to be brought to the surface.
+As program designers, we would like our language to be powerful enough so that we can write a function that expresses the 
+concept of summation itself rather than only functions that compute particular sums. We can do so readily in our functional 
+language by taking the common template shown above and transforming the "slots" into parameters:
+```text
+function sum(term, a, next, b) {
+    return a > b
+           ? 0
+           : term(a) + sum(term, next(a), next, b);
+}
+```
 
 ## Reference 
 
