@@ -1036,6 +1036,48 @@ function sum(term, a, next, b) {
 }
 ```
 
+Notice that *sum* takes as its arguments the lower and upper bounds *a* and *b* together with the functions *tem* and *next*. We can use *sum* just as we would any function. For example, we can use it to define *sum_cubes*:
+
+``` js
+function inc(n) {
+  return n + 1;
+}
+
+function sum_cubes(a, b) {
+  return sum(cube, a, inc, b);
+}
+
+sum_cubes(1, 10);
+```
+
+With the aid of an identity function to compute the term, we can define *sum_integers* in terms of *sum* :
+
+``` js
+function identity(x) {
+  return x;
+}
+function sum_integers(a, b) {
+  return sum(identity, a, inc, b);
+}
+sum_integers(1, 10);
+```
+
+We can also define *pi_sum* in the same way
+
+``` js
+function pi_sum(a, b) {
+  function pi_term(x) {
+    return 1 / (x * (x + 2));
+  }
+  function pi_next(x) {
+    return x + 4;
+  }
+  return sum(pi_term, a, pi_next, b);
+}
+```
+
+
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
