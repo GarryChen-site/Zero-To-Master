@@ -1076,7 +1076,77 @@ function pi_sum(a, b) {
 }
 ```
 
+### Constructing Functions using Lambda Expressions 
 
+In using *sum* as before, it seems terribly awkward to have to declare trivial function such as *pi_term* and *pi_next* just so we can use them as argument to our higher-order function. Rather than declare *pi_next* and *pi_term*, it would be more convenient to have a way to directly specify "the function that returns its input incremented by 4" and "the function that returns the reciprocal of its input times its input plus 2." We can do this by introducing the *lambda expression* as a syntactic form for creating functions. Using lambda expressions, we can describe what we want as 
+
+``` js
+x => x + 4
+```
+
+and 
+
+``` js
+x => 1 / (x * (x + 2))
+```
+
+Then we can express our *pi_sum* function without declaring any auxiliary functions:
+
+``` js
+function pi_sum(a, b) {
+  return sum(x => 1 / (x * (x + 2)),
+            a,
+            x => x + 4,
+            b);
+}
+
+function integral(f, a, b, dx) {
+  return sum(f,
+            a + dx / 2,
+            x => x + dx,
+            b)
+  				*
+    			dx;
+}
+```
+
+In general, lambda expressions are used to create functions in the same way as function declarations,  except that no name is specified for the function and the `return` keyword and braces are omitted
+
+``` txt
+(parameters) => expression
+```
+
+The resulting function is just as much a function as one that is created using a function declaration statement.  The only difference is that it has not been associated with any name in the environment. 
+
+We consider
+
+``` js
+function plus4(x) {
+  return x + 4;
+}
+```
+
+to be equivalent to
+
+``` js
+const plus4 = x => x + 4;
+```
+
+We can read a lambda expression as follows:
+
+``` txt
+//                      x         =>                   x    +   4
+//                      ^         ^                    ^    ^   ^
+// the function of an argument x that results in the value plus 4
+```
+
+Like any expression that has a  function  as its value, a  lambda  expression can be used as the function expression in an application   such as
+
+``` js
+((x,y,z) => x + y + square(x))(1, 2, 3);
+```
+
+or, more generally, in any context where we would normally use a  function  name.    
 
 ## Reference 
 
