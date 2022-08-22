@@ -1146,7 +1146,54 @@ Like any expression that has a  function  as its value, a  lambda  expression ca
 ((x,y,z) => x + y + square(x))(1, 2, 3);
 ```
 
-or, more generally, in any context where we would normally use a  function  name.    
+or, more generally, in any context where we would normally use a  function  name. 
+
+#### Using *const* to create local names
+
+ Another use of lambda expressions is in creating local names. We often need local names in out functions other than those that have been bound as parameters. For example, suppose we wish to compute the function
+
+``` txt
+f(x,y) = x(1+xy)^2 + y(1−y) + (1+xy)(1−y)
+```
+
+  which we cound also express as 
+
+``` txt
+a = 1 + xy
+b = 1 - y
+f(x,y) = xa^2 + yb + ab
+```
+
+In writing a function to compute *f*, we would like to include as local names not only *x* and *y* but also the names of intermediate quantities like *a* and *b*. One way to accomplish this is to use an auxiliary function to bind the local names:
+
+``` js
+function f(x, y) {
+  function f_helper(a, b) {
+    return x * square(a) + y * b + a * b;
+  }
+  return f_helper(1 + x * y, 1 - y);
+}
+```
+
+Use a lambda expression to specify an anonymous function for binding out local names.
+
+``` js
+function f_2(x, y) {
+  return ( (a, b) => x * square(a) + y * b + a * b)(1 + x * y, 1 - y);
+}
+```
+
+More convenient way to declare local names is by using constant declarations within the body of the function. Using *const*, 
+
+``` js
+function f_3(x, y) {
+  const a = 1 + x * y;
+  const b = 1 - y;
+  return x * square(a) + y * b + a * b;
+}
+```
+
+
 
 ## Reference 
 
