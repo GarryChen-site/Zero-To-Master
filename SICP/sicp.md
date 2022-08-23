@@ -1193,7 +1193,64 @@ function f_3(x, y) {
 }
 ```
 
+#### Conditional statements
 
+When functions become big, we should keep the scope of the names as narrow as possible
+
+``` js
+function expmod(base, exp, m) {
+  return exp === 0 
+  				? 1
+  				: is_even(exp)
+  				? ( expmod(base, exp / 2, m)
+            * expmod(base, exp / 2, m)) % m
+  				: (base * expmod(base, exp - 1, m)) % m;
+}
+```
+
+This function is unnecessarily inefficient , because it contains two identical calls:
+
+``` js
+expmod(base, exp / 2, m);
+```
+
+We would be tempted to introduce a local name for the expression 
+
+``` js
+function expmod(base, exp, m) {
+  const half_exp = expmod(base, exp / 2, m);
+  return exp === 0
+  				? 1
+  				: is_even(exp)
+  				? (half_exp * half_exp) % m
+  				: (base * expmod(base, exp - 1, m)) % m;
+}
+```
+
+This would make the function nonterminating. The problem is that the constant declaration appears outside the conditional expression, which means that is is executed even when the base case exp === 0 is met. To avoid this situation, we provide for *conditional statements*, and allow return statements to appear in the branches of the statement.. Using a conditional statement, we can write the function *expmod* as follows:
+
+``` js
+function expmod(base, exp, m) {
+  if (exp === 0) {
+    return 1;
+  } esle {
+    if (is_even(exp)) {
+      const half_exp = expmod(base, exp / 2, m);
+      return (half_exp * half_exp) % m;
+    } esle {
+      return (base * expmod(base, exp - 1, m)) % m;
+    }
+  }
+}
+```
+
+The general form of a conditional statement is 
+
+``` txt
+if (predicate) { consequent-statements } else { alternative-statements}
+```
+
+As for a conditional expression, the interpreter first evaluates the *predicate*. If it evaluates to true, the interpreter evaluates the *consequent-statements* in sequence, and if it evaluates to false, the interpreter evalautes the *alternative-statements* in sequence. Evaluation of a return      statement returns from the surrounding function, ignoring any statements in the sequence            after the return statement and any statements after the conditional statement.  Note that any constant declarations occurring in either part are local to that  part, because each part is enclosed in braces and thus forms its own  block.      
 
 ## Reference 
 
