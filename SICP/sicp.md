@@ -1252,6 +1252,42 @@ if (predicate) { consequent-statements } else { alternative-statements}
 
 As for a conditional expression, the interpreter first evaluates the *predicate*. If it evaluates to true, the interpreter evaluates the *consequent-statements* in sequence, and if it evaluates to false, the interpreter evalautes the *alternative-statements* in sequence. Evaluation of a return      statement returns from the surrounding function, ignoring any statements in the sequence            after the return statement and any statements after the conditional statement.  Note that any constant declarations occurring in either part are local to that  part, because each part is enclosed in braces and thus forms its own  block.      
 
+
+
+### Functions as General Methods
+
+We introduced compound functions as a mechanism for abstracting patterns of numerical operations so as to make them independent of the particular numbers involved. With higher-order functions , such as the *integral* function, we began to see a more powerful kind of abstraction: functions used to express general methods of computation , independent of the particular functions involved.
+
+#### Finding roots of equations by the half-interval method
+
+The *half-interval* method is a simple but powerful technique for finding roots of an equation f(x) = 0, where f is a continuous function. The idea is that, if we are given points a and b such that f(a) < 0 < f(b), then f must have at least one zero between a and b. To locate a zero, let *x* be the average of a and b and compute f(x). If f(x) > 0, then f must have a zero between a and x. If f(x) < 0, then f must have a zero between x and b. Continuing in this way, we can identify smaller and smaller intervals on  which f must have a zero.  When we reach a  point where the interval is small enough, the process stops.
+
+``` js
+function search(f, neg_point, pos_point) {
+  const midpoint = average(neg_point, pos_point);
+  if (close_enough(neg_point, pos_point)) {
+    return midpoint;
+  } else {
+    const text_value = f(midpoint);
+    return positive(test_value)
+    				? search(f, neg_point, midpoint)
+    				: negative(test_value)
+    				? search(f, midpoint, pos_point)
+    				: midpoint;
+  }
+}
+```
+
+We assume that we are initially given the function f together with points at which it's values are negative and positive.We first compute the midpoint of the two given points. Next we check to see if the given interval is small enough , and if so we simply return the midpoint as out answer. Otherwise, we compute as a test value the value of f at the midpoint. If the test value is positive, then we continue the process with a new interval running from the original negative point to the midpoint. If the test value  is negative, we continue with the interval from the midpoint to the positive  point. Finally, there is the possibility that the test value is 0, in    which case the midpoint is itself the root we are searching for.
+
+``` js
+function close_enough(x, y) {
+  return abs(x - y) < 0.001;
+}
+```
+
+
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
