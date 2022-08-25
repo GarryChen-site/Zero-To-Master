@@ -1286,6 +1286,24 @@ function close_enough(x, y) {
 }
 ```
 
+The function *search* is awkward to use directly, because we can accidentally give it points at which f's values do not have the required sign, in which case we get a wrong answer. Instead we will use *search* via the following function, which checks to see which of the endpoints has a negative function value and which has a positive value, and calls the *search* function accordingly. If the function has the same sign on the two given points, the half-interval method cannot be used, in which case the function signals an error.
+
+``` js
+function half_interval_method(f, a, b) {
+  const a_value = f(a);
+  const b_value = f(b);
+  return negative(a_value) && positive(b_value)
+  				? search(f, a, b)
+  				: negative(b_value) && positive(a_value)
+  				? search(f, b, a)
+  				: error("values are not of opposite sign");
+}
+```
+
+
+
+#### Finding fixed points of functions
+
 
 
 ## Reference 
