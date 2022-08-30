@@ -1389,6 +1389,18 @@ function sqrt(x) {
 }
 ```
 
+Notice how this formulation makes explicit the three ideas in the method: fixed-point search, average damping, and the function *y -> x/y*.It is instructive to compare this formulation of the square-root method with the original version. Bear in mind that these functions express the same process, and notice how much clearer the idea becomes when we express the process in terms of these abstractions.
+
+As a simple example of reuse, notice that the cube root of *x* is a fixed point of the function *y -> x/y^2*, so we can immediately generalize our square-root function to one that extracts cube roots.
+
+``` js
+function cube_root(x) {
+  return fixed_point(average_damp(y => x / square(y)), 1);
+}
+```
+
+#### Newton's method
+
 
 
 
