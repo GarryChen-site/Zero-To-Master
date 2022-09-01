@@ -1401,6 +1401,45 @@ function cube_root(x) {
 
 #### Newton's method
 
+Newton's method is the use of the fixed-point method we saw above to approximate a solution of the equation by finding a fixed point of the function *f*.
+
+In order to implement Newtion's method as a function, we must first express the idea of derivative .Note that "derivative", like average damping, is something that transforms a function into another function. For instance, the derivate of the function *x* -> *x^3* is the function *x -> 3x^2*
+
+In general, we can express the idea of derivative
+
+``` js
+function deriv(g) {
+  return x => (g(x + dx) - g(x)) / dx;
+}
+const dx = 0.00001;
+
+function cube(x) {
+  return x * x * x;
+}
+deriv(cube)(5);
+```
+
+we can express Newton's method as a fixed-point process
+
+``` js
+function newton_transform(g) {
+  return x => x - g(s) / deriv(g)(x);
+}
+function newtons_method(g, guess) {
+  return fixed_poinr(newton_transform(g), guess);
+}
+```
+
+It takes as arguments a function that computes the function for which we want to find zero, together with an initial fuess.
+
+For instance, to find the square root of *x*, we can use Newton's method to find a zero of the function *y -> y^2 - x* starting with an initial guess of 1.
+
+``` js
+function sqrt(x) {
+  return newtons_method(y => square(y) - x, 1);
+}
+```
+
 
 
 
