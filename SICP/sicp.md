@@ -1440,8 +1440,49 @@ function sqrt(x) {
 }
 ```
 
+#### Abstractions and first-class functions
+We've seen two ways to express the square-root computation as an instance of a more general method, once as a 
+fixed-point search and once using Newton's method. Since Newton's method was itself expressed as a fixed-point process, 
+we actually saw two ways to compute square roots as fixed points. Each method begins with a function and finds a fixed 
+point of some transformation of the function.
+```js
+function fixed_point_of_transform(g, transdform, guess) {
+    return fixed_point(transdform(g), guess);
+}
+```
+This very general function takes as its arguments a function *g* that computes some function, a function that 
+transforms *g*, and an initial guess. The returned result is a fixed point of the transformed function.
 
+Using this abstraction, we can recast the first square-root computation from this section
+```js
+function sqrt(x) {
+    return fixed_point_of_transform(
+        y => x /y, 
+            average_damp,
+            1);
+}
+```
+We began section with the observation that compound functions are a crucial abstraction mechanism, because they
+permit us to express general methods of computing as explicit elements in our programming language. Now we've seen 
+how higher-order functions permit us to manipulate these general methods to create further abstractions.
 
+As programmers, we should be alert to opportunities to identify the underlying abstractions in our programs and to build 
+upon them and generalize them to create more powerful abstractions. This is not to say that one should always write programs 
+in the most abstract way possible; expert programmers know how to choose the level of abstraction appropriate to their task. 
+But it is important to be able to think in terms of these abstractions, so that we can be ready to apply them in new contexts. 
+The significance of higher-order functions is that they enable us to represent these abstractions explicitly as elements in our 
+programming language, so that they can be handled just like other computational elements.
+
+In general, programming languages impose restrictions on the ways in which computational elements can be manipulated. 
+Elements with the fewest restrictions are said to have first-class status. Some of the "rights and privileges" of first-class 
+elements are:
+* They may be referred to using names.
+* They may be passed as arguments to functions.
+* They may be returned as the results of functions.
+* They may be included in data structures.
+
+JavaScript, like other high-level programming languages, awards functions full first-class status. This poses challenges 
+for efficient implementation, but the resulting gain in expressive power is enormous.
 
 ## Reference 
 
