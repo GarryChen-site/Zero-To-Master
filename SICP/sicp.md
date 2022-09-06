@@ -1484,6 +1484,14 @@ elements are:
 JavaScript, like other high-level programming languages, awards functions full first-class status. This poses challenges 
 for efficient implementation, but the resulting gain in expressive power is enormous.
 
+
+
+# Building Abstractions with Data
+
+We concentrated om computational processes and on the role of functions in program design. We saw how to use primitive data (numbers) and primitive operations (arithmetic operations), how to combine functions to form compound functions through composition. conditionals, and the use of parameters, and how to abstract processes by using function declarations. We saw that a function can be regarded as a pattern for the local evolution of a process, and we classified, reasoned about, and performed simple algorithmic analyses of some common patterns for processes as enhance the power of out language by enabling us to manipulate, and thereby to reason in terms of, general methods of computation. This is much of the essence of programming.
+
+In this chapter we are going to look at more complex data. All the function in chapter 1 operate on simple numerical data, and simple data are not sufficient for many of the problems we wish to address using computation. Programs are typically designed to model complex phenomena, and more often than not one must construct computational objects that have several parts in order to model real-world phenomena that have several aspects. Thus, whereas our focus in chapter 1 was on building abstractions by combining functions to form compound functions, we turn in this chapter to another key aspect of any programming language: the means it provides for building abstractions by combining data objects to form *compound data*.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
