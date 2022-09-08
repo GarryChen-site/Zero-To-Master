@@ -1492,6 +1492,26 @@ We concentrated om computational processes and on the role of functions in progr
 
 In this chapter we are going to look at more complex data. All the function in chapter 1 operate on simple numerical data, and simple data are not sufficient for many of the problems we wish to address using computation. Programs are typically designed to model complex phenomena, and more often than not one must construct computational objects that have several parts in order to model real-world phenomena that have several aspects. Thus, whereas our focus in chapter 1 was on building abstractions by combining functions to form compound functions, we turn in this chapter to another key aspect of any programming language: the means it provides for building abstractions by combining data objects to form *compound data*.
 
+Why do we want compound data in a programming language? For the same reasons that we want compound functions: to elevate the conceptual level at which we can design our programs, to increase the modularity of our designs, and to enhance the expressive power of our language. Just as the ability to declare functions enables us to deal with processes at a higher conceptual level than that of the primitive operations of the language, the ability to construct compound data objects enables us to deal with data at a higher conceptual level than that of the primitive data objects of the language.
+
+Consider the task of designing a system to perform arithmetic with rational numbers. We could imagine an operation add_rat that takes two rational numbers and produces their sum. In terms of simple data, a rational number can be thought of as two integers: a numerator and a denominator.Thus, we could design a program in which each rational number would be represented by two integers (a numerator and a denominator) and where add_rat would be implemented by two functions (one producing the numerator of the sum and one producing the denominator). But this would be awkward, because we would then need to explicitly keep track of which numerators corresponded to which denominators. In a system intended to perform many operations on many rational numbers, such bookkeeping details would clutter the programs substantially, to say nothing of what they would do to our minds.  It would be much better if we could "glue together" a numerator and denominator to form a pair—a compound data object—that our programs could manipulate in a way that would be consistent with regarding a rational number as a single conceptual unit. 
+
+The use of compound data also enables us to increase the modularity of our programs. If we can manipulate rational numbers directly as objects in their own right, then we can separate the part of our program that deals with rational numbers per se from the details of how rational numbers may be represented as pairs of integers. The general technique of isolating the parts of a program that deal with how data objects are represented from the parts of a program that deal with how data objects are used is a powerful design methodology called data abstraction. We will see how data abstraction makes programs much easier to design, maintain, and modify. 
+
+The use of compound data leads to a real increase in the expressive power of our programming language.  Consider the idea of forming a "linear combination"ax+by. We might like to write a function that would accept aaa, bbb, xxx, and yyy as arguments and return the value of ax+by. This presents no difficulty if the arguments are to be numbers, because we can readily declare the function
+``` js
+function linear_combination(a, b, x, y) {
+  return a * x + b * y
+}
+```
+But suppose we are not concerned only with numbers. Suppose we would like to describe a process that forms linear combinations whenever addition and multiplication are defined—for rational numbers, complex numbers, polynomials, or whatever. We could express this as a function of the form 
+``` js
+function linear_combination(a, b, x, y) {
+    return add(mul(a, x), mul(b, y));
+}
+```
+where add and mul are not the primitive functions + and * but rather more complex things that will perform the appropriate operations for whatever kinds of data we pass in as the arguments a, b, x, and y. The key point is that the only thing linear_combination should need to know about a, b, x, and y is that the functions add and mul will perform the appropriate manipulations. From the perspective of the functionlinear_combination, it is irrelevant what a, b, x, and y are and even more irrelevant how they might happen to be represented in terms of more primitive data. This same example shows why it is important that our programming language provide the ability to manipulate compound objects directly: Without this, there is no way for a function such as linear_combination to pass its arguments along to add and mul without having to know their detailed structure.
+
 ## Reference 
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
