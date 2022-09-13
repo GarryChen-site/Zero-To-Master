@@ -1521,7 +1521,85 @@ We will then augment the representational power of our language by introducing s
 Next we will take up the problem of working with data that may be represented differently by different parts of a program. This leads to the need to implement generic operations, which must handle many different types of data. Maintaining modularity in the presence of generic operations requires more powerful abstraction barriers than can be erected with simple data abstraction alone. In particular, we introduce data-directed programming as a technique that allows individual data representations to be designed in isolation and then combined additively (i.e., without modification). To illustrate the power of this approach to system design, we close the chapter by applying what we have learned to the implementation of a package for performing symbolic arithmetic on polynomials, in which the coefficients of the polynomials can be integers, rational numbers, complex numbers, and even other polynomials.
 
 ## Introduction to Data Abstraction
+We noted that a function used as an element in creating a more complex function could be regarded not only as a collection of particular operations but also as a functional abstraction.
+That is, the details of how the function was implemented could be suppressed, and the particular function itself could be replaced by any other function with the same overall behavior.
+In other words, we could make an abstraction that would separate the way the function would be used from the details of how the function would be implemented in terms of more primitive functions.
+The analogous notion for compound data is called data abstraction. Data abstraction is a methodology that enables us to isolate how a compound data object is used from the details of how it is constructed from more primitive data objects.
 
+The basic idea of data abstraction is to structure the programs that are to use compound data objects so that they operate on "abstract data." That is, our programs should use data in such a way as to make no assumptions about the data that are not strictly necessary for performing the task at hand. At the same time, a "concrete" data representation is defined independent of the programs that use the data. The interface between these two parts of our system will be a set of functions, called selectors and constructors, that implement the abstract data in terms of the concrete representation. To illustrate this technique, we will consider how to design a set of functions for manipulating rational numbers.
+
+### Example: Arithmetic Operations for Rational Numbers
+Suppose we want to do arithmetic with rational numbers. We want to be able to add, subtract, multiply, and divide them and to test whether two rational numbers are equal.
+
+Let us begin by assuming that we already have a way of constructing a rational number from a numerator and a denominator. We also assume that, given a rational number, we have a way of extracting (or selecting) its numerator and its denominator. Let us further assume that the constructor and selectors are available as functions:
+* make_rat(n, d) returns the rational number whose numerator is the integer n and whose denominator is the integer d.
+* numer(x) returns the numerator of the rational number x
+* denom(x) returns the denominator of the rational number x.
+
+We are using here a powerful strategy of synthesis: wishful thinking. We haven't yet said how a rational number is represented, or how the functions numer, denom, and make_rat should be implemented.Even so, if we did have these three functions, we could then add, subtract, multiply, divide, and test equality by using the following relations:
+![](chap2/2.1.1.png)
+We can express these rules as functions:
+```js
+function add_rat(x, y) {
+    return make_rat(numer(x) * denom(y) + numer(y) * denom(x),
+                    denom(x) * denom(y));
+}
+function sub_rat(x, y) {
+    return make_rat(numer(x) * denom(y) - numer(y) * denom(x),
+                    denom(x) * denom(y));
+}
+function mul_rat(x, y) {
+    return make_rat(numer(x) * numer(y),
+                    denom(x) * denom(y));
+}
+function div_rat(x, y) {
+    return make_rat(numer(x) * denom(y),
+                    denom(x) * numer(y));
+}
+function equal_rat(x, y) {
+    return numer(x) * denom(y) === numer(y) * denom(x);
+}
+```
+Now we have the operations on rational numbers defined in terms of the selector and constructor functions numer, denom, and make_rat. But we haven't yet defined these. What we need is some way to glue together a numerator and a denominator to form a rational number.
+
+#### Pairs
+To enable us to implement the concrete level of our data abstraction, our JavaScript environment provides a compound structure called a pair, which can be constructed with the primitive function pair. This function takes two arguments and returns a compound data object that contains the two arguments as parts. Given a pair, we can extract the parts using the primitive functions head and tail.
+Thus, we can use pair,head, and tail as follows:
+``` js
+const x = pair(1, 2);
+head(x); // 1
+tail(x); // 2
+```
+Notice that a pair is a data object that can be given a name and manipulated, just like a primitive data object.
+Moreover, pair can be used to form pairs whose elements are pairs, and so on:
+``` js
+const x = pair(1, 2);
+
+const y = pair(3, 4);
+
+const z = pair(x, y); 
+
+head(head(z)); // 1
+head(tail(z)); // 3
+```
+The single compound-data primitive pair, implemented by the functions pair,head, and tail, is the only glue we need. Data objects constructed from pairs are called list-structured data.
+
+#### Representing rational numbers
+Pairs offer a natural way to complete the rational-number system. Simply represent a rational number as a pair of two integers: a numerator and a denominator.
+Then make_rat,numer, and denom are readily implemented as follows:
+```js 
+function make_rat(n, d) {
+    return pair(n, d);
+}
+
+function number(x) {
+    return head(x);
+}
+
+function denom(x) {
+    return tail(x);
+}
+```
 
 
 ## Reference 
