@@ -1600,7 +1600,32 @@ function denom(x) {
     return tail(x);
 }
 ```
+Also, in order to display the results of our computations, we can print rational numbers by printing the numerator, a slash, and the denominator. We use the primitive function stringify to turn any value (here a number) into a string. 
+The operator + in JavaScript is overloaded; it can be applied to two numbers or to two strings, and in the latter case it returns the result of concatenating the two strings
+```js
+function print_rat(x) {
+  return display(stringify(number(x)) + " / " + stringify(denom(x)));
+}
+```
+Now we can try our rational-number functions
+```js
+const one_half = make_rat(1, 2);
+const one_third = make_rat(1, 3);
+print_rat(one_half);
+```
+```js
+print_rat(add_rat(one_third, ont_third)); // "6 / 9"
+```
+As the final example shows, our rational-number implementation does not reduce rational numbers to lowest terms. We can remedy this by changing make_rat. If we have a gcd function that produces the greatest common divisor of two integers, we can use gcd to reduce the numerator and the denominator to lowest terms before constructing the pair
+```js
+functions make_rat(n, d) {
+  const g = gcd(n, d)
+  return pair(n / g, d / g);
+}
+```
 
+### Abstraction Barriers
+Before continuing with more examples of compound data and data abstraction, let us consider some of the issues raised by the rational-number example. We defined the rational-number operations in terms of a constructor make_rat and selectors numer and denom. In general, the underlying idea of data abstraction is to identify for each type of data object a basic set of operations in terms of which all manipulations of data objects of that type will be expressed, and then to use only those operations in manipulating the data. 
 
 ## Reference 
 
