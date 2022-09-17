@@ -1618,7 +1618,7 @@ print_rat(add_rat(one_third, ont_third)); // "6 / 9"
 ```
 As the final example shows, our rational-number implementation does not reduce rational numbers to lowest terms. We can remedy this by changing make_rat. If we have a gcd function that produces the greatest common divisor of two integers, we can use gcd to reduce the numerator and the denominator to lowest terms before constructing the pair
 ```js
-functions make_rat(n, d) {
+function make_rat(n, d) {
   const g = gcd(n, d)
   return pair(n / g, d / g);
 }
@@ -1649,6 +1649,43 @@ function denom(x) {
 The difference between this implementation and the previous one lies in when we compute the gcd. If in our typical use of rational numbers we access the numerators and denominators of the same rational numbers many times, it would be preferable to compute the gcd when the rational numbers are constructed. If not, we may be better off waiting until access time to compute the gcd. In any case, when we change from one representation to the other, the functions add_rat,sub_rat, and so on do not have to be modified at all.
 Constraining the dependence on the representation to a few interface functions helps us design programs as well as modify them, because it allows us to maintain the flexibility to consider alternate implementations. To continue with our simple example, suppose we are designing a rational-number package and we can't decide initially whether to perform the gcd at construction time or at selection time. The data-abstraction methodology gives us a way to defer that decision without losing the ability to make progress on the rest of the system.
 
+### What Is Meant by Data?
+We began the rational-number implementation  by implementing the rational-number operations add_rat,sub_rat, and so on in terms of three unspecified functions:make_rat,numer, and denom. At that point, we could think of the operations as being defined in terms of data objects—numerators, denominators, and rational numbers—whose behavior was specified by the latter three functions.
+But exactly what is meant by data? It is not enough to say "whatever is implemented by the given selectors and constructors." Clearly, not every arbitrary set of three functions can serve as an appropriate basis for the rational-number implementation.Clearly, not every arbitrary set of three functions can serve as an appropriate basis for the rational-number implementation.We need to guarantee that, if we construct a rational number x from a pair of integers n and d, then extracting the numer and the denom of x and dividing them should yield the same result as dividing n by d.
+In other words, make_rat,numer, and denom must satisfy the condition that,for any integer n and any nonzero integer d, if x is make_rat(n, d), then
+
+numer(x) / denom(x) = n / d
+
+In fact, this is the only condition make_rat,numer, and denom must fulfill in order to form a suitable basis for a rational-number representation. In general, we can think of data as defined by some collection of selectors and constructors, together with specified conditions that these functions must fulfill in order to be a valid representation.
+This point of view can serve to define not only "high-level" data objects, such as rational numbers, but lower-level objects as well. Consider the notion of a pair, which we used in order to define our rational numbers. We never actually said what a pair was, only that the language supplied functions pair,head, and tail for operating on pairs. But the only thing we need to know about these three operations is that if we glue two objects together using pair we can retrieve the objects using head and tail.
+That is, the operations satisfy the condition that, for any objects x and y, if z is pair(x, y) then head(z) is x and tail(z) is y.Indeed, we mentioned that these three functions are included as primitives in our language. However, any triple of functions that satisfies the above condition can be used as the basis for implementing pairs.
+This point is illustrated strikingly by the fact that we could implement pair,head, and tail without using any data structures at all but only using functions.Here are the definitions
+```js
+function pair(x, y) {
+    function dispatch(m) {
+        return m === 0
+                ? x
+                : m === 1
+                ? y 
+                : error(m, "argument not 0 or 1 -- pari");
+    }
+    return dispatch;
+}
+
+function head(z) {
+    return z(0);
+}
+
+function tail(z) {
+    return z(1);
+}
+
+```
+This use of functions corresponds to nothing like our intuitive notion of what data should be. Nevertheless, all we need to do to show that this is a valid way to represent pairs is to verify that these functions satisfy the condition given above.
+The subtle point to notice is that the value returned by pair(x, y) is a function—namely the internally defined functiond ispatch, which takes one argument and returns either x or y depending on whether the argument is 0 or 1.
+Correspondingly, head(z) is defined to apply z to 0. Hence, if z is the function formed by pair(x, y), then z applied to 0 will yield x. Thus, we have shown that head(pair(x, y)) yields x, as desired. Similarly, tail(pair(x, y)) applies the function returned by pair(x, y) to 1, which returns y. Therefore, this functional implementation of pairs is a valid implementation, and if we access pairs using only pair,head, and tail we cannot distinguish this implementation from one that uses "real" data structures.
+The point of exhibiting the functional representation of pairs is not that our language works this way (an efficient implementation of pairs might use JavaScript's native vector data structure) but that it could work this way. The functional representation, although obscure, is a perfectly adequate way to represent pairs, since it fulfills the only conditions that pairs need to fulfill. This example also demonstrates that the ability to manipulate functions as objects automatically provides the ability to represent compound data.
+This may seem a curiosity now, but functional representations of data will play a central role in our programming repertoire.
 
 ## Reference 
 
