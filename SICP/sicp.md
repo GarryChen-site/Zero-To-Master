@@ -1,5 +1,3 @@
-
-
 # Building Abstractions with Functions
 
 ## The Elements of Programming
@@ -16,7 +14,7 @@ Function and Data
 
 ### Expressions
 
-``` js
+```js
 486;
 
 137 + 349; // 486
@@ -33,7 +31,7 @@ Function and Data
 
 Expressions such as these, which contain other expressions as components, are called combinations.
 
-``` js
+```js
 (3 * 5) + (10 - 6); // 19
 
 3 * 5 + 10 / 2;
@@ -54,19 +52,17 @@ Expressions such as these, which contain other expressions as components, are ca
 
 Reads a statement typed by the user, evaluates the statement, and prints the result.
 
-
-
 ### Naming and the Environment
 
 A critical aspect of a programming language is the means it provides for using names to refer to computational objects, and our first such means are constants.
 
-``` js
+```js
 const size = 2;
 ```
 
 caused the intercepter to associate the value 2 with name *size*.Once the name *size* has been associated with the number2, we can refer to the value 2 by name
 
-``` js
+```js
 size;
 
 // 2
@@ -76,9 +72,9 @@ size;
 // 10
 ```
 
-The interpreter needs to execute the constant declaration for *size* before the name *size* can be used in an expression. 
+The interpreter needs to execute the constant declaration for *size* before the name *size* can be used in an expression.
 
-``` js
+```js
 const size = 2;
 5 * size;
 
@@ -97,20 +93,18 @@ Constant declartion is our language's simplest means of abstraction, for it allo
 
 It should be clear that the possibility of associating values with names and later retrieving them means that the interpreter must maintain some sort of memory that keeps track of the name-object pairs.This memory is called the environment.
 
-
-
 ### Evaluating Operator Combinations
 
 To evaluate an operator combination, do the following:
 
-1. Evaluate the operand expressions of the combination 
+1. Evaluate the operand expressions of the combination
 2. Apply the function that is denoted by the operator to the arguments that are the values of the operands
 
 First, observe that the first step dictates that in order to accomplish the evaluation process for a combination we must first perform the evaluation process on each operand of the combination .Thus, the evaluation rule is *recursive* in nature; that is , it includes, as one of its steps, the need to invoke the rule itself.
 
 Notice how succinctly the idea of recursion can be used to express what, in the case of a deeply nested combination ,would otherwise be viewed as a rather complicated process.
 
-``` js
+```js
 (2 + 4 * 6) * (3 + 12)
 ```
 
@@ -122,7 +116,7 @@ Each combination is represented by a node with branches corresponding to the ope
 
 Observe that the repeated application of the first step brings us to the point where we need to evaluate, not combination , but primitive expressions such as numerals or names. We take care of the primitive cases by stipulating that
 
-* the values of numerals are the numbers that they name, and 
+* the values of numerals are the numbers that they name, and
 * the values of names are the objects associated with those names in the environment
 
 The key point to notice is the role of the environment in determining the meaning of the names in expressions. In an interactive language such as JavaScript, it is meaningless to speak of the value of an expression such as x + 1 without specifying any information about the environment that would provide a meaning for the name x. The general notion of the environment as providing a context in which evaluation takes place will play an important role in our understanding of program execution.
@@ -134,8 +128,6 @@ The word const is a keyword in JS. Keywords carry a particular meaning, and thus
 A keyword or a combination of keywords in a statement instructs the JavaScript interpreter to treat the statement in a special way.
 
 Each such syntactic from has its own evaluation rule. The various kinds of statements and expressions (each with its associated evaluation rule) constitute the syntax of the programming language.
-
-
 
 ### Compound Functions
 
@@ -149,34 +141,34 @@ Now we will learn about function declarations, a much powerful abstraction techn
 
 We begin by examining how to express the idea of "squaring". We might say, "To square something, take it times itself."This is expressed in our language as
 
-``` js
+```js
 function square(x) {
   return x * x;
 }
 ```
 
-``` txt
+```txt
 function square(    x   ) { return x    *     x; }
 //  ^       ^       ^         ^    ^    ^     ^
 // To    square something,  take   it times itself.
 ```
 
-The simplest form of a function declaration is 
+The simplest form of a function declaration is
 
-``` txt
+```txt
 function name(parameters) { return expression; }
 ```
 
 Having declared *square*, we can now use it in a function application expression
 
-``` js
+```js
 square(21);
 // 441
 ```
 
 Function applications are-after operator combinations-the second kind of combination of expression into large expressions.The general form of a function application is
 
-``` text
+```text
 function-expression( argument-expressions )
 ```
 
@@ -187,30 +179,30 @@ Where the function-expression of the application specifies the function to be ap
   1. Exaluate the subexpressions of the application, namely the function expression and the argument expressions
   2. Apply the function that is the value of the function expression to the values of the argument expression.
 
-  ``` js
+  ```js
   square(2 + 5);
   // 49
   ```
 
   Of course function application expressions can also serve as argument expressions.
 
-  ``` text
+  ```text
   square(x) + square(y)
   ```
 
   Declare a function *sum_of_squares* that, given any two numbers as arguments,produces the sum of their squares:
 
-  ``` js
+  ```js
   function sum_of_squares(x, y) {
     return square(x) + square(y);
   }
-  
+
   sum_of_square(3,4);
   ```
 
   Now we can use sum_of_squares as a building block in constructinf future functions:
 
-  ``` js
+  ```js
   function f(a) {
     return sum_of_squares(a + 1, a * 2);
   }
@@ -218,8 +210,6 @@ Where the function-expression of the application specifies the function to be ap
   ```
 
   In addition to compound functions, any JS environment provides primitive functions that are build into the interpreter or loaded from libraries. Indeed, one could not tell by looking at the definition of *sum_of_squares* given above whether *square* was build into the interpreter, loaded from a library, or defined as a compound function.
-
-
 
 ### The Substitution Model for Function Application
 
@@ -231,43 +221,43 @@ We can assume that the application of primitive functions is handed by the inter
 
 Let's evaluate the application
 
-``` js
+```js
 f(5)
 ```
 
 We begin by retrieving the return expression of f:
 
-``` text
+```text
 sum_of_squares(a + 1, a * 2)
 ```
 
 Then we replace the parameter a by the argument 5:
 
-``` text
+```text
 sum_of_squares(5 + 1, 5 * 2)
 ```
 
-Thus the problem reduces to the evaluation of an application with two arguments and a functionc expression *sum_of_squares*.Evaluating this application involves three subproblems. We must evaluate the function expression to get the function to be applied, and we must evaluate the argument expressions to get the arguments. Now *5 + 1* produces 6 and *5* * *2* produces 10, so we must apply the *sum_of_squares* function to 6 and 10. These values are substituted for the parameters x and y in the body of *sum_of_squares*,reducing the expression to 
+Thus the problem reduces to the evaluation of an application with two arguments and a functionc expression *sum_of_squares*.Evaluating this application involves three subproblems. We must evaluate the function expression to get the function to be applied, and we must evaluate the argument expressions to get the arguments. Now *5 + 1* produces 6 and *5* * *2* produces 10, so we must apply the *sum_of_squares* function to 6 and 10. These values are substituted for the parameters x and y in the body of *sum_of_squares*,reducing the expression to
 
-``` text
+```text
 square(6) + square(10)
 ```
 
-If we used the declaration of *square*, this reduces to 
+If we used the declaration of *square*, this reduces to
 
-``` text
+```text
 (6 * 6) + (10 * 10)
 ```
 
-which reduces by multiplication to 
+which reduces by multiplication to
 
-``` text
+```text
 36 + 100
 ```
 
-and finally to 
+and finally to
 
-``` text
+```text
 136
 ```
 
@@ -276,13 +266,13 @@ The process we have just described is called the *substitution model* for functi
 Two points that should be stressed:
 
 * The purpose of the substitution is to help us think about function application, not to provide a description of how the interpreter really works. Typical interpreters do not evaluate function applications by manipulating the text of a function to substitute values for the parameters.In practice, the "substitution" is accompanied by using a local environment for the parameters.
-* We will present a sequence of increasingly elaborate models of how interpreter work. The substitution model is only the first of these models-a way to get started thinking formally about the evaluation process.In general, when                 modeling phenomena in science and engineering, we begin with simplified, incomplete models. As we examine things in greater detail, these simple models become inadequate and must be replaced by more refined models. 
+* We will present a sequence of increasingly elaborate models of how interpreter work. The substitution model is only the first of these models-a way to get started thinking formally about the evaluation process.In general, when                 modeling phenomena in science and engineering, we begin with simplified, incomplete models. As we examine things in greater detail, these simple models become inadequate and must be replaced by more refined models.
 
-#### Applicative order versus normal order 
+#### Applicative order versus normal order
 
 According to the description of evaluation, the interpreter first evaluates the function and argument expressions and then applies the resulting function to the resulting arguments. An alternative evaluation model would not evaluate the arguments until their values were needed.Instead it would first substitute argument expressions for parameters until it obtained an expression involving only operators and primitive functions, and would then perform the evaluation .
 
-``` js
+```js
 f(5)
 
 sum_of_squares(5 + 1, 5 * 2)
@@ -299,13 +289,11 @@ This alternative "fully expand and then reduce" evaluation method is known as *n
 
 JS uses applicative-order evaluation,partly because of the additional efficiency obtained from avoiding multiple evaluations of expressions such as those illustrated with 5 + 1 and 5 * 2 above and , more significantly, because normal-order evlaluation becomes much more complicated to deal with when we leave the realm of functions that can be modeled by substitution.
 
-
-
 ### Conditional Expressions and Predicates
 
-Case analysis can be written in JS usiing a conditional expression as 
+Case analysis can be written in JS usiing a conditional expression as
 
-``` js
+```js
 function abs(x) {
   return x >= 0 ? x : - x;
 }
@@ -313,9 +301,9 @@ function abs(x) {
 
 which could be expressed as "If x is great than or equal to zero, return x; otherwise return -x"
 
-The general form of a conditional expression is 
+The general form of a conditional expression is
 
-``` text
+```text
 predicate ? consequent-expression : alternative-expression
 ```
 
@@ -325,9 +313,9 @@ To evaluate a conditional expression, the interpreter starts by evaluating the p
 
 The word *predicate* is used for operators and functions that return true or false, as well as for expressions that evaluate to true or false.
 
-If we prefer to handle the zero case separately, in js, we can express 
+If we prefer to handle the zero case separately, in js, we can express
 
-``` js
+```js
 function abs(x) {
   return x > 0
   			? x
@@ -342,18 +330,16 @@ In addition to primitive predicates such as >=, >, <, <=, ===, and !== that are 
 * *expression1 && expression2*
 
   This operation expresses *logic conjunction*, meaning roughly the same as the English word "and". This syntactic form is syntactic sugar for *expression1 ? expression2 : false*
-
 * *expression1 || expression2*
 
   This operation expresses *logic disjunction*, meaning roughly the same as the English word "or". This syntactic form is syntactic sugar for *expression1 ? true : expression2 *
-
 * *! expression*
 
   This operation expresses *logic negation*, meaning roughly the same as the English word "not".The value of the expression is true when *expression* evalautes to false, and false when *expression* evaluates to true.
 
 As an example of how these predicates are used, the condition that a number *x* can be in range *5<x<10* may be expressed as
 
-``` text
+```text
 x > 5 && x < 10
 ```
 
@@ -361,7 +347,7 @@ The syntactic form *&&* has low precedence than the comparison operators > and <
 
 As another example, we can declare a predicate to test whether one number is greater than or equal to another as
 
-``` js
+```js
 function greater_or_equal(x, y) {
   return x > y || x === y
 }
@@ -369,15 +355,13 @@ function greater_or_equal(x, y) {
 
 or alternatively as
 
-``` js
+```js
 function greater_or_equal(x, y) {
   return !(x < y)
 }
 ```
 
 The function *greater_or_equal*, when applied to two numbers, behaves the same as the operator >=. Unary operators have higher precedence than binary operators, which makes the parentheses in this example necessary.
-
-
 
 #### Exercise 1.1
 
@@ -389,19 +373,17 @@ The function *greater_or_equal*, when applied to two numbers, behaves the same a
 
 #### Exercise 1.5
 
-
-
 ### Example: Square Roots by Newtom's Method
 
 Functions, as introduced above, are much like ordinary mathematical functions. They specify a value that is determined by one or more parameters.But there is an important difference between mathematical functions and computer functions.Computer functions must be effective.
 
-As a case in point, consider the problem of computing square roots. We can define the square-root function as 
+As a case in point, consider the problem of computing square roots. We can define the square-root function as
 
 ![](chap1/ch1-1.1.7-square-root.png)
 
 This describes a perfectly legitimate mathematical function. But, the definition does not describe a computer function.Indeed, it tells us almost nothing about how to actually find the square root of a given number.It will not help matters to rephrase this defintion in pseudo-JS
 
-``` js
+```js
 function sqrt(x) {
   return the y with y >= 0 && square(y) === x;
 }
@@ -413,17 +395,15 @@ How does one compute square roots? The most common way is to use Newton's method
 
 For example, we can compute the square root of 2 as follows. Suppose our initial guess is 1:
 
- 
-
-| Guess  |     Quotient      |          Average           |
+| Guess |     Quotient     |          Average          |
 | :----: | :---------------: | :------------------------: |
-|   1    |      2/1 = 2      |       (2+1)/2 = 1.5        |
-|  1.5   |  2/1.5 = 1.3333   |  (1.3333+1.5)/2 = 1.4167   |
+|   1   |      2/1 = 2      |       (2+1)/2 = 1.5       |
+|  1.5  |  2/1.5 = 1.3333  |  (1.3333+1.5)/2 = 1.4167  |
 | 1.4167 | 2/1.4167 = 1.4118 | (1.4167+1.4118)/2 = 1.4142 |
 
 Now let's formalize the process in terms of functions. We start with a value for the radicand(the number whose square root we are trying to compute) and a value for the guess.If the guess is good enough for our purposes, we are done; if not, we must repeat the process with an improved guess.
 
-``` js
+```js
 function sqrt_iter(guess, x) {
   return is_good_enough(guess, x)
   			? guess
@@ -431,11 +411,9 @@ function sqrt_iter(guess, x) {
 }
 ```
 
-
-
 A guess is improved by averaging it with the quotient fo the radicand and the old guess:
 
-``` js
+```js
 function improve(guess, x) {
   return average(guess, x / guess)
 }
@@ -443,7 +421,7 @@ function improve(guess, x) {
 
 where
 
-``` js
+```js
 function average(x, y) {
   return (x + y) / 2;
 }
@@ -451,7 +429,7 @@ function average(x, y) {
 
 We also have to say that we mean by "good enough." The idea is to improve the answer until it is close enough so that its square differs from the radicand by less than a predetermined tolerance (here 0.001)
 
-``` js
+```js
 function is_good_enoufh(guess, x) {
   return abs(square(guess) - x) < 0.001;
 }
@@ -459,7 +437,7 @@ function is_good_enoufh(guess, x) {
 
 Finally, we need a way to get started. For instance, we can always guess that the square root of any number is 1:
 
-``` js
+```js
 function sqrt(x) {
   return sqrt_iter(1, x)
 }
@@ -467,21 +445,15 @@ function sqrt(x) {
 
 The function *sqrt_iter*, demonstrates how iteration can be accomplished using no special construct other than the ordinary ability to call a function.
 
-
-
 #### Exercise 1.6
 
 #### Exercise 1.7
 
 #### Exercise 1.8
 
-
-
 ### Functions as Black-Box Abstractions
 
 The function *sqrt* is our first example of a process defined by a set of mutually defined functions.Notice that the declaration of *sqer_iter* is *recursive*; that is, the function is defined in terms of itself .The idea of being able to define a function in terms of itself may be disturbing ; it may seen unclear how such a "circular" definition could make sense at all, much less specify a well-defined process to be carried out by a computer. Let's consider some other important points illustrated by the *sqrt* example.
-
-
 
 Observe that the problem of computing square roots breaks up naturally into a number of subproblems: how to tell whether a guess is good enough, how to improve a guess, and so on. Each of these tasks is accomplished by a separate function. The entire *sqrt* program can be viewed as a cluster of functions that mirrors the decomposition of the problem into subproblems.
 
@@ -491,13 +463,13 @@ The improtance of this decomposition strategy is not simply that one is dividing
 
 Thus, considering only the values they return, the following two functions squaring a number should be indistinguishable . Each takes a numerical argument and produces the square of that number as the value.
 
-``` js
+```js
 function square(x) {
   return x * x;
 }
 ```
 
-``` js
+```js
 function square(x) {
   return math_exp(double(math_log(x)))
 }
@@ -512,7 +484,7 @@ So a function should be able to suppress detail.
 
 One detail of a function's implementation that should not matter to the user of the function is the implementer's choice of names for the function's parameters. Thus, the following functions should not be distinguishable:
 
-``` js
+```js
 function square(x) {
   return x * x;
 }
@@ -526,7 +498,7 @@ The principle-that the meaning of a function should be independent of the parame
 
 For example, we used *square* in the declaration of *is_good_enough* in out square-root function:
 
-``` js
+```js
 function is_good_enough(guess, x) {
   return abs(square(guess) - x) < 0.001;
 }
@@ -538,15 +510,13 @@ If the parameters were not local to the bodies of their respective functions, th
 
 A parameter of a functino has a very special role in the function declaration , in that it doesn't matter what name the parameter has. Such a name is called bound, and we say that the function declaration *binds* its parameters. The meaning of a function declaration is unchanged if a bound name is consistently renamed throughout the declaration. It a name is not bound, we say that it is *free*.The set of statements for which a binding declares a name is called the *scope* of that name. In a function declaration, the bound names declared as the parameters of the function have the body of the function as their scope.
 
-In the declaration of *is_good_enough* above, *guess* and *x* are bound names but *abs* and *square* are free. The meaning of *is_good_enough* should be independent of the names we choose for *guess* and *x* so long as they are distinct and different from *abs* and *square*.(If we renamed *guess* and *abs* we would have introduced a bud by *capturing* the name *abs*. It would have changed from free to bound.) The meaning of *is_good_enough* is not indepent of the choice of its free names,however. It surely depends upon the face(external to this declaration) that the name *abs* refers to a function for computing the absolute value of a number. The function *is_good_enough* will compute a different function if we substitute *math_cos* (the primitive cosine function) for *abs* in its declaration . 
-
-
+In the declaration of *is_good_enough* above, *guess* and *x* are bound names but *abs* and *square* are free. The meaning of *is_good_enough* should be independent of the names we choose for *guess* and *x* so long as they are distinct and different from *abs* and *square*.(If we renamed *guess* and *abs* we would have introduced a bud by *capturing* the name *abs*. It would have changed from free to bound.) The meaning of *is_good_enough* is not indepent of the choice of its free names,however. It surely depends upon the face(external to this declaration) that the name *abs* refers to a function for computing the absolute value of a number. The function *is_good_enough* will compute a different function if we substitute *math_cos* (the primitive cosine function) for *abs* in its declaration .
 
 #### Internal declarations and block structure
 
-We have one kind of name isolation available to us so far: The parameters of a function are local to the body of the function.The square-root program illustrates another way in which we would like to control the use of names. 
+We have one kind of name isolation available to us so far: The parameters of a function are local to the body of the function.The square-root program illustrates another way in which we would like to control the use of names.
 
-``` js
+```js
 function sqrt(x) {
   return sqrt_iter(1,x);
 }
@@ -567,7 +537,7 @@ The problem with this program is that the only function that is important to use
 
 We would like to localize the subfunctions, hiding them inside *sqrt* so that *sqrt* could coexit with other successive approximations, each having its own private *is_good_enough* function. To make this possible, we allow a function to have internal declarations that are local to that function.
 
-``` js
+```js
 function sqrt(x) {
     function is_good_enough(guess, x) {
         return abs(square(guess) - x) < 0.001;
@@ -588,7 +558,7 @@ Any matching pair of braces designates a *block*, and declarations inside the bl
 
 In addition to internalizing the declarations of the auxiliary functions, we can simplify them.
 
-``` JS
+```JS
 function sqrt(x) {
     function is_good_enough(guess) {
         return abs(square(guess) - x) < 0.001;
@@ -609,8 +579,6 @@ We will use block structure extensively to help us break up large programs into 
 
 It appears in most advanced programming languages and is an important tool for helping to organize the construction of large programs.
 
-
-
 ## Functions and the Processes They Generate
 
 We have now considered the elements of programming: We have used primitive arithmetic operations, we have combined these operations, and we have abstracted these composite operations by declaring them as compound functions. But that is not enough to enable us to say that we know how to program. Our situation is analogous to that of someone who has learned the rules for how the pieces move in chess but knows nothing of typical openings, tactics, or strategy. Like the novice chess player, we don't yet know the common patterns of usage in the domain. We lack the knowledge of which moves are worth making (which functions are worth declaring). We lack the experience to predict the consequences of making a move (executing a function).
@@ -619,27 +587,25 @@ The ability to visualize the consequences of the actions under consideration is 
 
 A function is a pattern for the *local evolution* of a computational process. It specifies how each stage of the process is built upon the previous stage. We would like to be able to make statements about the overall, or *global*, behavior of a process whose local evolution has been specified by a function. This is very difficult to do in general, but we can at least try to describe some typical patterns of process evolution.
 
-In this section we will examine some common "shapes" for processes generated by simple functions. We will also investigate the rates at which these processes consume the important computational resources of time and space. 
-
-
+In this section we will examine some common "shapes" for processes generated by simple functions. We will also investigate the rates at which these processes consume the important computational resources of time and space.
 
 ### Linear Recursion and Iteration
 
-We begin by considering the factorial function, defined by 
+We begin by considering the factorial function, defined by
 
-``` txt
+```txt
 n! = n * (n-1) * (n-2) ... 3 * 2 * 1 
 ```
 
 There are many ways to compute factorials. One way is to make use of the observation that *n!* Is equal to *n* times(n-1)! for any positive integer *n*:
 
-``` txt
+```txt
 n! = n*[(n-1) * (n-2) ... 3 * 2 * 1] = n * (n-1)!
 ```
 
 Thus, we can compute *n!* by computing (n-1)! and multiplying the result by *n*. If we add the stipulation that 1! is equal to 1, this observation translates directly into a computer function:
 
-``` js
+```js
 function factorial(n) {
   return n === 1 
   			? 1
@@ -651,14 +617,14 @@ function factorial(n) {
 
 Now let's take a different perspective on computing factorials. We could describe a rule for computing *n*! by specifying that we first multiply 1 by 2, then multiply the result by 3, then by 4, and so on until we reach *n*. More formally, we maintain a running product, together with a counter that counts from 1 up to *n*.e can describe the computation by saying that the counter and the product simultaneously change from one step to the next according to the rule
 
-``` txt
+```txt
 product  <-  counter * produce
 counter  <-  counter + 1
 ```
 
 and stipulating that *n*! is the value of the product when the counter exceeds *n*.
 
-``` js
+```js
 function factorial(n) {
   return fact_iter(1, 1, n);
 }
@@ -680,25 +646,23 @@ Compare the two processes. From one point of view, they seem hardly different at
 
 Consider the first process.The expansion occurs as the process builds up a chain of *deferred operations* (in this case, a chain of multiplications). The contraction occurs as the operations are actually performed. This type of process, characterized by a chain of deferred operations, is called a *recursive process*.Carrying out this process requires that the interpreter keep track of the operations to be performed later on.  In the computation of *n*!, the length of the chain of deferred multiplications, and hence the amount of information needed to keep track of it, grows linearly with *n* (is proportional to *n*), just like the number of steps. Such a process is called a *linear recursive process*.
 
-By contrast, the second process does not grow and shrink. At each step, all we need to keep track of, for any *n*, are the current values of the names`product`, `counter`, and `max_count`. We call this an *iterative process*. In general, an iterative process is one whose state can be summarized by a fixed number of *state variables*, together with a fixed rule that describes how the state variables should be updated as the process moves from state to state and an (optional) end test that specifies conditions under which the process should terminate.In computing *n*!, the number of steps required grows linearly with *n*. Such a process is called a *linear iterative process*.
+By contrast, the second process does not grow and shrink. At each step, all we need to keep track of, for any *n*, are the current values of the names `product`, `counter`, and `max_count`. We call this an *iterative process*. In general, an iterative process is one whose state can be summarized by a fixed number of *state variables*, together with a fixed rule that describes how the state variables should be updated as the process moves from state to state and an (optional) end test that specifies conditions under which the process should terminate.In computing *n*!, the number of steps required grows linearly with *n*. Such a process is called a *linear iterative process*.
 
 The contrast between the two processes can be seen in another way. In the iterative case, the state variables provide a complete description of the state of the process at any point. If we stopped the computation between steps, all we would need to do to resume the computation is to supply the interpreter with the values of the three state variables. Not so with the recursive process. In this case there is some additional "hidden" information, maintained by the interpreter and not contained in the state variables, which indicates "where the process is" in negotiating the chain of deferred operations. The longer the chain, the more information must be maintained.
 
 In contrasting iteration and recursion, we must be careful not to confuse the notion of a recursive *process* with the notion of a recursive *function*. When we describe a function as recursive, we are referring to the syntactic fact that the function declaration refers (either directly or indirectly) to the function itself. But when we describe a process as following a pattern that is, say, linearly recursive, we are speaking about how the process evolves, not about the syntax of how a function is written. It may seem disturbing that we refer to a recursive function such as `fact_iter` as generating an iterative process. However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three names in order to execute the process.
 
-
-
 ### Tree Recursion
 
-Another common pattern of computation is called *tree recursion*. As an example, consider computing the sequence of Fibonacci numbers,  in which each number is the sum of the preceding two:     
+Another common pattern of computation is called *tree recursion*. As an example, consider computing the sequence of Fibonacci numbers,  in which each number is the sum of the preceding two:
 
-``` txt
+```txt
 0, 1, 1, 2, 3, 5, 8, 13, 21,...
 ```
 
-In general, the Fibonacci numbers can be defined by the rule    
+In general, the Fibonacci numbers can be defined by the rule
 
-``` txt
+```txt
             0                       if n = 0
 Fib(n) =    1                       if n = 1
             Fib(n-1) + Fib(n-2)     otherwise
@@ -706,7 +670,7 @@ Fib(n) =    1                       if n = 1
 
 We can immediately translate this definition into a recursive function for computing Fibonacci numbers:
 
-``` js
+```js
 function fib(n) {
   return n === 0 
   			? 0
@@ -726,14 +690,14 @@ Thus, the process uses a number of steps that grows exponentially with the input
 
 We can also formulate an iterative process for computing the Fibonacci numbers. The idea is to use a pair of integers a and b, initialized to Fib(1) = 1 and Fib(0) = 0, and to repeatedly apply the simultaneous transformations
 
-``` txt
+```txt
 a <- a + b
 b <- a
 ```
 
-It is not hard to show that, after applying this transformation n times, a and b will be equal, respectively, to Fib(n+1) and Fib(n). Thus, we can compute Fibonacci numbers iteratively using the function 
+It is not hard to show that, after applying this transformation n times, a and b will be equal, respectively, to Fib(n+1) and Fib(n). Thus, we can compute Fibonacci numbers iteratively using the function
 
-``` js
+```js
 function fib(n) {
   return fib_iter(1, 0, n)
 }
@@ -748,8 +712,6 @@ function fib_iter(a, b, count) {
 The second muthod for computing Fib(n) is a liner iteration. The difference in number of steps required by the two methods - one liner in n, one growing as fast as Fib(n) itself-is enormous, even for small inputs.
 
 One should not conclude from this that tree-recursive processes are useless. When we consider processes that operate on hierarchically structured data rather than numbers, we wii find that tree recursion is a natural and powerful tool. But even in numerical operations, tree-recursive processes can be useful in helping us to understand and design programs. For instance, although the first *fib* function is much less efficient than the second one, it is more straightforward , being little more than a translation into JS of the definition of the Fibonacci sequence. To formulate the iterative algorithm required noticing that the computation could be recast as an iteration with three state variables .
-
-
 
 ### Example: Counting change
 
@@ -772,7 +734,7 @@ Thus, we can recursively reduce the problem of changing a given amount to proble
 
 We can easily translate this description into a recursive function:
 
-``` js
+```js
 function count_change(amount) {
   return cc(amount, 5)
 }
@@ -802,32 +764,30 @@ function first_denamination(kinds_of_coins) {
 
 We can now answer our original question about changing a dollar:
 
-``` js
+```js
 count_change(100);
 ```
 
-The function *count_change* generates a tree-recursive process with redundancies similar to those in our first implementation of *fib*. 
+The function *count_change* generates a tree-recursive process with redundancies similar to those in our first implementation of *fib*.
 
 ### Orders of Growth
 
 The previous examples illustrate that processes can differ considerably in the rates at which they consume computational resources.  One convenient way to describe this difference is to use the notion of *order of growth* to obtain a gross measure of the resources required by a process as the inputs become larger.
 
-For instance, with the linear recursive process for computing factorial described in section 1.2.1 the number of steps grows proportionally to the input *n*.  Thus, the steps required for this process grows as Θ(n).  We also saw that the space required grows as Θ(n). For the iterative factorial, the number of steps is still Θ(n) but the space is Θ(1)—that is, constant.The tree-recursive Fibonacci computation requires Θ(ϕ^n) steps and space Θ(n), where ϕ is the golden ratio described in section 1.2.2.  
-
-
+For instance, with the linear recursive process for computing factorial described in section 1.2.1 the number of steps grows proportionally to the input *n*.  Thus, the steps required for this process grows as Θ(n).  We also saw that the space required grows as Θ(n). For the iterative factorial, the number of steps is still Θ(n) but the space is Θ(1)—that is, constant.The tree-recursive Fibonacci computation requires Θ(ϕ^n) steps and space Θ(n), where ϕ is the golden ratio described in section 1.2.2.
 
 ### Exponentiation
 
 Consider the problem of computing the exponential of a given number. We would like a function that takes as arguments a base *b* and a positive integer exponent *n* and computes b^n. One way to do this is via recursive definition
 
-``` txt
+```txt
 b^n = b * b^n-1
 b^0 = 1
 ```
 
-which translates readily into the function 
+which translates readily into the function
 
-``` js
+```js
 function expt(b, n) {
   return n === 0 
   			? 1
@@ -837,7 +797,7 @@ function expt(b, n) {
 
 This is a linear recursive process, which requires Θ(n) steps and Θ(n) space.
 
-``` js
+```js
 function expt(b, n) {
   return expt_iter(b, n, 1);
 }
@@ -851,30 +811,30 @@ function expt_iter(b, counter, product) {
 
 This version requires Θ(n) steps and  Θ(1) space.
 
-We can compute exponentials in fewer steps by using successive squaring. For instance, rather than computing b^8 as 
+We can compute exponentials in fewer steps by using successive squaring. For instance, rather than computing b^8 as
 
-``` txt
+```txt
 b * (b *(b *(b *(b *(b *(b * b))))))
 ```
 
   We can compute it using three multiplications:
 
-``` txt
+```txt
 b^2 = b * b
 b^4 = b^2 * b^2
 b^8 = b^4 * b^4
 ```
 
-This method works fine for exponents that are powers of 2.  We can also take  advantage of successive squaring in computing exponentials in general if we  use the rule    
+This method works fine for exponents that are powers of 2.  We can also take  advantage of successive squaring in computing exponentials in general if we  use the rule
 
-``` txt
+```txt
 b^n = (b^n/2)^2				if n is even
 b^n = b * b^(n-1)			if n is odd
 ```
 
 We can express this method as a function:
 
-``` js
+```js
 function fast_expt(b, n) {
   return n === 0 
   			? 1
@@ -887,23 +847,21 @@ function is_even(n) {
 }
 ```
 
-The process evolved by *fast_expt* grows logarithmically with *n* in both space and number of steps. 
-
-
+The process evolved by *fast_expt* grows logarithmically with *n* in both space and number of steps.
 
 ### Greatest Common Divisors
 
 The greatest common divisor (GCD) of two integers *a* and *b* is defined to be the largest integer that divides both *a* and *b* with no remainder.For example, the GCD og 16 and 28 is 4. One way to find the GCD of two integers is to factor them and search for common factors, but there is a famous algorithm that is much more efficient.
 
-The idea of the algorithm is based on the observation that, if *r* is the remainder when *a* is divided by *b*, then the common divisors of *a* and *b* are precisely the same as the common divisors of *b* and *r*.Thus, we can use the equation 
+The idea of the algorithm is based on the observation that, if *r* is the remainder when *a* is divided by *b*, then the common divisors of *a* and *b* are precisely the same as the common divisors of *b* and *r*.Thus, we can use the equation
 
-``` txt
+```txt
 GCD(a,b) = GCD(b,r)
 ```
 
 to successively reduce the problem of computing a GCD to the problem of computing the GCD of smaller and smaller pairs of integers. For example,
 
-``` txt
+```txt
 GCD(206, 40) = GCD(40, 6)
 						 = GCD(6, 4)
 						 = GCD(4, 2)
@@ -915,7 +873,7 @@ reduces GCD(206, 40) to GCD(2, 0), which is 2. It is possible to show that start
 
 It is easy to express Euclid's Algorithm as a function:
 
-``` js
+```js
 function gcd(a, b) {
   return b === 0 ? a : gcd(b, a % b);
 }
@@ -925,8 +883,6 @@ This generates an iterative process, whose number of steps grows as the logarith
 
 > **Lame's Theorem** :If Euclid's Algorithm requires *k* steps to compute the GCD of some pair, then the smaller number in the pair must be greater than or equal to the *k*th Fibonacci number.
 
-
-
 ### Example: Testing for Primality
 
 The section describes two methods for checking the primality of an integer *n*
@@ -935,7 +891,7 @@ The section describes two methods for checking the primality of an integer *n*
 
 Since ancient times, mathematicians have been fascinated by problems concerning prime numbers, and many people have worked on the problem of determining ways to test if numbers are prime. The following program finds the samllest integral divisor (greater than 1) of a given number *n*. It does this in a straightforward way, by testing *n* for divisibility by successive integers starting with 2.
 
-``` js
+```js
 function smallest_divisor(n) {
   return find_divisor(n, 2);
 }
@@ -954,7 +910,7 @@ function divides(a, b) {
 
 We can test whether a nubmer is prime as follows: *n* is prime if and only if *n* is its own smallest divisor.
 
-``` js
+```js
 function is_prime(n) {
   return n === smallest_divisor(n);
 }
@@ -962,35 +918,40 @@ function is_prime(n) {
 
 ## Formulating Abstractions with Higher-Order Functions
 
-We have seen that functions are, in effect, abstractions that describe compound operations on numbers independent of the 
+We have seen that functions are, in effect, abstractions that describe compound operations on numbers independent of the
 particular numbers. For example, when we declare
+
 ```js
 function cube(x) {
     return x * x * x;
 }
 ```
+
 we are not talking about the cube of a particular number, but rather about a method for obtaining the code of any number.
 Of course get along without ever declaring this function, by always writing expressions such as
+
 ```text
 3 * 3 * 3
 x * x * x
 y * y * y
 ```
-are never mentioning *cube* explicitly. This would place us at a serious disadvantage, forcing us to work always at the 
-level of the particular operations that happen to be primitives in the language (multiplication, in this case) rather than 
-in terms of higher-level operations. Our programs would be able to compute cubes, but our language would lack the ability 
-to express the concept of cubing.One of the things we should demand from a powerful programming language is the ability to 
-build abstractions by assigning names to common patterns and then to work in terms of the abstractions directly.Functions 
+
+are never mentioning *cube* explicitly. This would place us at a serious disadvantage, forcing us to work always at the
+level of the particular operations that happen to be primitives in the language (multiplication, in this case) rather than
+in terms of higher-level operations. Our programs would be able to compute cubes, but our language would lack the ability
+to express the concept of cubing.One of the things we should demand from a powerful programming language is the ability to
+build abstractions by assigning names to common patterns and then to work in terms of the abstractions directly.Functions
 provide this ability. This is why all but the most primitive programming languages include mechanisms for declaring functions.
 
-Yet even in numerical processing we will be severely limited in our ability to create abstractions if we are restricted to 
-functions whose parameters must be numbers. Often the same programming pattern will be used with a number of different functions. 
-To express such patterns as concepts, we will need to construct functions that can accept functions as arguments or return 
+Yet even in numerical processing we will be severely limited in our ability to create abstractions if we are restricted to
+functions whose parameters must be numbers. Often the same programming pattern will be used with a number of different functions.
+To express such patterns as concepts, we will need to construct functions that can accept functions as arguments or return
 functions as values.Functions that manipulate functions are called *higher-order* functions.
 
 ### Functions as Arguments
 
 Consider the following three functions. The first computes the sum of the integers from *a* through *b*:
+
 ```js
 function sum_integers(a, b) {
     return a > b
@@ -998,7 +959,9 @@ function sum_integers(a, b) {
             : a + sum_integers(a + 1, b);
 }
 ```
+
 The second computes the sum of the cubes of the integers in the given range:
+
 ```js
 function sum_cubes(a, b) {
     return a > b
@@ -1006,7 +969,9 @@ function sum_cubes(a, b) {
            : cube(a) + sum_cubes(a + 1, b);
 } 
 ```
+
 The third computes the sum of a sequence of terms in the series
+
 ```js
 function pi_sum(a, b) {
     return a > b
@@ -1014,9 +979,11 @@ function pi_sum(a, b) {
            : 1 / (a * (a + 2)) + pi_sum(a + 4, b);
 }
 ```
-These three functions clearly share a common underlying pattern. They are for the most part identical, differing only in 
-the name of the function, the function of *a* used to compute the term to be added, and the function that provides the 
+
+These three functions clearly share a common underlying pattern. They are for the most part identical, differing only in
+the name of the function, the function of *a* used to compute the term to be added, and the function that provides the
 next value of *a*. We could generate each of the functions by filling in slots in the same template:
+
 ```text
 function name(a, b) {
     return a > b
@@ -1024,10 +991,12 @@ function name(a, b) {
            : term(a) + name(next(a), b);
 }
 ```
+
 The presence of such a common pattern is strong evidence that there is a useful abstraction waiting to be brought to the surface.
-As program designers, we would like our language to be powerful enough so that we can write a function that expresses the 
-concept of summation itself rather than only functions that compute particular sums. We can do so readily in our functional 
+As program designers, we would like our language to be powerful enough so that we can write a function that expresses the
+concept of summation itself rather than only functions that compute particular sums. We can do so readily in our functional
 language by taking the common template shown above and transforming the "slots" into parameters:
+
 ```text
 function sum(term, a, next, b) {
     return a > b
@@ -1038,7 +1007,7 @@ function sum(term, a, next, b) {
 
 Notice that *sum* takes as its arguments the lower and upper bounds *a* and *b* together with the functions *tem* and *next*. We can use *sum* just as we would any function. For example, we can use it to define *sum_cubes*:
 
-``` js
+```js
 function inc(n) {
   return n + 1;
 }
@@ -1052,7 +1021,7 @@ sum_cubes(1, 10);
 
 With the aid of an identity function to compute the term, we can define *sum_integers* in terms of *sum* :
 
-``` js
+```js
 function identity(x) {
   return x;
 }
@@ -1064,7 +1033,7 @@ sum_integers(1, 10);
 
 We can also define *pi_sum* in the same way
 
-``` js
+```js
 function pi_sum(a, b) {
   function pi_term(x) {
     return 1 / (x * (x + 2));
@@ -1076,23 +1045,23 @@ function pi_sum(a, b) {
 }
 ```
 
-### Constructing Functions using Lambda Expressions 
+### Constructing Functions using Lambda Expressions
 
-In using *sum* as before, it seems terribly awkward to have to declare trivial function such as *pi_term* and *pi_next* just so we can use them as argument to our higher-order function. Rather than declare *pi_next* and *pi_term*, it would be more convenient to have a way to directly specify "the function that returns its input incremented by 4" and "the function that returns the reciprocal of its input times its input plus 2." We can do this by introducing the *lambda expression* as a syntactic form for creating functions. Using lambda expressions, we can describe what we want as 
+In using *sum* as before, it seems terribly awkward to have to declare trivial function such as *pi_term* and *pi_next* just so we can use them as argument to our higher-order function. Rather than declare *pi_next* and *pi_term*, it would be more convenient to have a way to directly specify "the function that returns its input incremented by 4" and "the function that returns the reciprocal of its input times its input plus 2." We can do this by introducing the *lambda expression* as a syntactic form for creating functions. Using lambda expressions, we can describe what we want as
 
-``` js
+```js
 x => x + 4
 ```
 
-and 
+and
 
-``` js
+```js
 x => 1 / (x * (x + 2))
 ```
 
 Then we can express our *pi_sum* function without declaring any auxiliary functions:
 
-``` js
+```js
 function pi_sum(a, b) {
   return sum(x => 1 / (x * (x + 2)),
             a,
@@ -1112,15 +1081,15 @@ function integral(f, a, b, dx) {
 
 In general, lambda expressions are used to create functions in the same way as function declarations,  except that no name is specified for the function and the `return` keyword and braces are omitted
 
-``` txt
+```txt
 (parameters) => expression
 ```
 
-The resulting function is just as much a function as one that is created using a function declaration statement.  The only difference is that it has not been associated with any name in the environment. 
+The resulting function is just as much a function as one that is created using a function declaration statement.  The only difference is that it has not been associated with any name in the environment.
 
 We consider
 
-``` js
+```js
 function plus4(x) {
   return x + 4;
 }
@@ -1128,13 +1097,13 @@ function plus4(x) {
 
 to be equivalent to
 
-``` js
+```js
 const plus4 = x => x + 4;
 ```
 
 We can read a lambda expression as follows:
 
-``` txt
+```txt
 //                      x         =>                   x    +   4
 //                      ^         ^                    ^    ^   ^
 // the function of an argument x that results in the value plus 4
@@ -1142,23 +1111,23 @@ We can read a lambda expression as follows:
 
 Like any expression that has a  function  as its value, a  lambda  expression can be used as the function expression in an application   such as
 
-``` js
+```js
 ((x,y,z) => x + y + square(x))(1, 2, 3);
 ```
 
-or, more generally, in any context where we would normally use a  function  name. 
+or, more generally, in any context where we would normally use a  function  name.
 
 #### Using *const* to create local names
 
  Another use of lambda expressions is in creating local names. We often need local names in out functions other than those that have been bound as parameters. For example, suppose we wish to compute the function
 
-``` txt
+```txt
 f(x,y) = x(1+xy)^2 + y(1−y) + (1+xy)(1−y)
 ```
 
-  which we cound also express as 
+  which we cound also express as
 
-``` txt
+```txt
 a = 1 + xy
 b = 1 - y
 f(x,y) = xa^2 + yb + ab
@@ -1166,7 +1135,7 @@ f(x,y) = xa^2 + yb + ab
 
 In writing a function to compute *f*, we would like to include as local names not only *x* and *y* but also the names of intermediate quantities like *a* and *b*. One way to accomplish this is to use an auxiliary function to bind the local names:
 
-``` js
+```js
 function f(x, y) {
   function f_helper(a, b) {
     return x * square(a) + y * b + a * b;
@@ -1177,15 +1146,15 @@ function f(x, y) {
 
 Use a lambda expression to specify an anonymous function for binding out local names.
 
-``` js
+```js
 function f_2(x, y) {
   return ( (a, b) => x * square(a) + y * b + a * b)(1 + x * y, 1 - y);
 }
 ```
 
-More convenient way to declare local names is by using constant declarations within the body of the function. Using *const*, 
+More convenient way to declare local names is by using constant declarations within the body of the function. Using *const*,
 
-``` js
+```js
 function f_3(x, y) {
   const a = 1 + x * y;
   const b = 1 - y;
@@ -1197,7 +1166,7 @@ function f_3(x, y) {
 
 When functions become big, we should keep the scope of the names as narrow as possible
 
-``` js
+```js
 function expmod(base, exp, m) {
   return exp === 0 
   				? 1
@@ -1210,13 +1179,13 @@ function expmod(base, exp, m) {
 
 This function is unnecessarily inefficient , because it contains two identical calls:
 
-``` js
+```js
 expmod(base, exp / 2, m);
 ```
 
-We would be tempted to introduce a local name for the expression 
+We would be tempted to introduce a local name for the expression
 
-``` js
+```js
 function expmod(base, exp, m) {
   const half_exp = expmod(base, exp / 2, m);
   return exp === 0
@@ -1229,7 +1198,7 @@ function expmod(base, exp, m) {
 
 This would make the function nonterminating. The problem is that the constant declaration appears outside the conditional expression, which means that is is executed even when the base case exp === 0 is met. To avoid this situation, we provide for *conditional statements*, and allow return statements to appear in the branches of the statement.. Using a conditional statement, we can write the function *expmod* as follows:
 
-``` js
+```js
 function expmod(base, exp, m) {
   if (exp === 0) {
     return 1;
@@ -1244,15 +1213,13 @@ function expmod(base, exp, m) {
 }
 ```
 
-The general form of a conditional statement is 
+The general form of a conditional statement is
 
-``` txt
+```txt
 if (predicate) { consequent-statements } else { alternative-statements}
 ```
 
-As for a conditional expression, the interpreter first evaluates the *predicate*. If it evaluates to true, the interpreter evaluates the *consequent-statements* in sequence, and if it evaluates to false, the interpreter evalautes the *alternative-statements* in sequence. Evaluation of a return      statement returns from the surrounding function, ignoring any statements in the sequence            after the return statement and any statements after the conditional statement.  Note that any constant declarations occurring in either part are local to that  part, because each part is enclosed in braces and thus forms its own  block.      
-
-
+As for a conditional expression, the interpreter first evaluates the *predicate*. If it evaluates to true, the interpreter evaluates the *consequent-statements* in sequence, and if it evaluates to false, the interpreter evalautes the *alternative-statements* in sequence. Evaluation of a return      statement returns from the surrounding function, ignoring any statements in the sequence            after the return statement and any statements after the conditional statement.  Note that any constant declarations occurring in either part are local to that  part, because each part is enclosed in braces and thus forms its own  block.
 
 ### Functions as General Methods
 
@@ -1262,7 +1229,7 @@ We introduced compound functions as a mechanism for abstracting patterns of nume
 
 The *half-interval* method is a simple but powerful technique for finding roots of an equation f(x) = 0, where f is a continuous function. The idea is that, if we are given points a and b such that f(a) < 0 < f(b), then f must have at least one zero between a and b. To locate a zero, let *x* be the average of a and b and compute f(x). If f(x) > 0, then f must have a zero between a and x. If f(x) < 0, then f must have a zero between x and b. Continuing in this way, we can identify smaller and smaller intervals on  which f must have a zero.  When we reach a  point where the interval is small enough, the process stops.
 
-``` js
+```js
 function search(f, neg_point, pos_point) {
   const midpoint = average(neg_point, pos_point);
   if (close_enough(neg_point, pos_point)) {
@@ -1280,7 +1247,7 @@ function search(f, neg_point, pos_point) {
 
 We assume that we are initially given the function f together with points at which it's values are negative and positive.We first compute the midpoint of the two given points. Next we check to see if the given interval is small enough , and if so we simply return the midpoint as out answer. Otherwise, we compute as a test value the value of f at the midpoint. If the test value is positive, then we continue the process with a new interval running from the original negative point to the midpoint. If the test value  is negative, we continue with the interval from the midpoint to the positive  point. Finally, there is the possibility that the test value is 0, in    which case the midpoint is itself the root we are searching for.
 
-``` js
+```js
 function close_enough(x, y) {
   return abs(x - y) < 0.001;
 }
@@ -1288,7 +1255,7 @@ function close_enough(x, y) {
 
 The function *search* is awkward to use directly, because we can accidentally give it points at which f's values do not have the required sign, in which case we get a wrong answer. Instead we will use *search* via the following function, which checks to see which of the endpoints has a negative function value and which has a positive value, and calls the *search* function accordingly. If the function has the same sign on the two given points, the half-interval method cannot be used, in which case the function signals an error.
 
-``` js
+```js
 function half_interval_method(f, a, b) {
   const a_value = f(a);
   const b_value = f(b);
@@ -1305,18 +1272,22 @@ half_interval_method(math_sin, 2, 4);
 ```
 
 #### Finding fixed points of functions
-A number *x* is called a *fixed point* of a function *f* if x satisfies the 
+
+A number *x* is called a *fixed point* of a function *f* if x satisfies the
 equation *f(x) = x*. For some functions *f* can locate a fixed point by beginning
 with an initial guess and applying *f* repeatedly,
+
 ```text
 f(x), f(f(x)), f(f(f(x))), …
 ```
-until the value does not change very much. Using this idea, we can devise a 
-function *fixed_point* that takes as inputs a function and an initial guess and 
+
+until the value does not change very much. Using this idea, we can devise a
+function *fixed_point* that takes as inputs a function and an initial guess and
 produces an approximation to a fixed point of the function. We apply the function
 repeatedly until we find two successive values whose difference is less than some
 prescribed tolerance:
-```js 
+
+```js
 const tolerance = 0.00001;
 function fixed_point(f, first_guess) {
   function close_enough(x, y) {
@@ -1334,18 +1305,21 @@ function fixed_point(f, first_guess) {
 }
 fixed_point(math_cos, 1);
 ```
-The fixed-point process is reminiscent of the process we used for finding 
-square roots. Both are based on the idea of repeatedly improving guess until the result 
+
+The fixed-point process is reminiscent of the process we used for finding
+square roots. Both are based on the idea of repeatedly improving guess until the result
 satisfied some criterion. In face, we can readily formulate the square-root
 computation as a fixed-point search. Computing the square root of some number *x* reuqires
-finding a *y* such that *y^2 = x*. Putting this equation into the equivalent 
+finding a *y* such that *y^2 = x*. Putting this equation into the equivalent
 form *y = x/y*. we recognize that we are looking for a fixed point of the function
 *y -> x/y*, and we can therefore try to compute square root as
+
 ```js
 function sqrt(x) {
     return fixed_point(y=> x/y, 1);
 }
 ```
+
 Unfortunately, this fixed-point search does not converge. Consider an initial guess *y1*.
 The next guess is *y2 = x/y1* and the next guess is *y3 = x/y2 = x/(x/y1) = y1*. This results in an
 infinite loop in which the two guesses *y1* and y2* repeat over and over, oscillating about the answer.
@@ -1355,12 +1329,14 @@ Since the answer is always between out guess *y* and *x/y*, we can make a new gu
 not as far from *y* as *x/y* by averaging *y* with *x/y*, so that the next guess after *y* is *1/2(y+x/y)*
 instead of *x/y*.The process of making such a sequence of guesses is simply the process of looking for a fixed
 point of *y ->  1/2(y + x/y):
+
 ```js
 function sqrt(x) {
     return fixed_point(y => average(y, x / y), 1);
 }
 ```
-With this modification, the square-root function works. In fact, if we unravel the definitions, we can see that the 
+
+With this modification, the square-root function works. In fact, if we unravel the definitions, we can see that the
 sequence of approximations to the square root generated here is precisely the same as the one generated by our original square-root function
 
 ### Functions as Returned Values
@@ -1369,21 +1345,21 @@ The above examples demonstrate how the ability to pass functions as arguments si
 
 At the fixed-point example, we used average damping to make the approximations converge. Namely, given a function *f*, we consider the function whose value at *x* is equal to the average of *x* and  *f(x)*
 
-``` js
+```js
 function average_damp(f) {
   return x => average(x, f(x));
 }
 ```
 
-The function *average_damp* takes as its argument a function *f* and returns as its value a function(produced by the lambda expression) that, when applied to a number *x*,produces the average of *x* and *f(x)*. 
+The function *average_damp* takes as its argument a function *f* and returns as its value a function(produced by the lambda expression) that, when applied to a number *x*,produces the average of *x* and *f(x)*.
 
-``` js
+```js
 average_dump(square)(10);
 ```
 
 Using *average_damp*, we can reformulate the square-root function as follows:
 
-``` js
+```js
 function sqrt(x) {
   return fixed_point(average_damp(y => x / y), 1);
 }
@@ -1393,7 +1369,7 @@ Notice how this formulation makes explicit the three ideas in the method: fixed-
 
 As a simple example of reuse, notice that the cube root of *x* is a fixed point of the function *y -> x/y^2*, so we can immediately generalize our square-root function to one that extracts cube roots.
 
-``` js
+```js
 function cube_root(x) {
   return fixed_point(average_damp(y => x / square(y)), 1);
 }
@@ -1407,7 +1383,7 @@ In order to implement Newtion's method as a function, we must first express the 
 
 In general, we can express the idea of derivative
 
-``` js
+```js
 function deriv(g) {
   return x => (g(x + dx) - g(x)) / dx;
 }
@@ -1421,7 +1397,7 @@ deriv(cube)(5);
 
 we can express Newton's method as a fixed-point process
 
-``` js
+```js
 function newton_transform(g) {
   return x => x - g(s) / deriv(g)(x);
 }
@@ -1434,26 +1410,30 @@ It takes as arguments a function that computes the function for which we want to
 
 For instance, to find the square root of *x*, we can use Newton's method to find a zero of the function *y -> y^2 - x* starting with an initial guess of 1.
 
-``` js
+```js
 function sqrt(x) {
   return newtons_method(y => square(y) - x, 1);
 }
 ```
 
 #### Abstractions and first-class functions
-We've seen two ways to express the square-root computation as an instance of a more general method, once as a 
-fixed-point search and once using Newton's method. Since Newton's method was itself expressed as a fixed-point process, 
-we actually saw two ways to compute square roots as fixed points. Each method begins with a function and finds a fixed 
+
+We've seen two ways to express the square-root computation as an instance of a more general method, once as a
+fixed-point search and once using Newton's method. Since Newton's method was itself expressed as a fixed-point process,
+we actually saw two ways to compute square roots as fixed points. Each method begins with a function and finds a fixed
 point of some transformation of the function.
+
 ```js
 function fixed_point_of_transform(g, transdform, guess) {
     return fixed_point(transdform(g), guess);
 }
 ```
-This very general function takes as its arguments a function *g* that computes some function, a function that 
+
+This very general function takes as its arguments a function *g* that computes some function, a function that
 transforms *g*, and an initial guess. The returned result is a fixed point of the transformed function.
 
 Using this abstraction, we can recast the first square-root computation from this section
+
 ```js
 function sqrt(x) {
     return fixed_point_of_transform(
@@ -1462,29 +1442,29 @@ function sqrt(x) {
             1);
 }
 ```
+
 We began section with the observation that compound functions are a crucial abstraction mechanism, because they
-permit us to express general methods of computing as explicit elements in our programming language. Now we've seen 
+permit us to express general methods of computing as explicit elements in our programming language. Now we've seen
 how higher-order functions permit us to manipulate these general methods to create further abstractions.
 
-As programmers, we should be alert to opportunities to identify the underlying abstractions in our programs and to build 
-upon them and generalize them to create more powerful abstractions. This is not to say that one should always write programs 
-in the most abstract way possible; expert programmers know how to choose the level of abstraction appropriate to their task. 
-But it is important to be able to think in terms of these abstractions, so that we can be ready to apply them in new contexts. 
-The significance of higher-order functions is that they enable us to represent these abstractions explicitly as elements in our 
+As programmers, we should be alert to opportunities to identify the underlying abstractions in our programs and to build
+upon them and generalize them to create more powerful abstractions. This is not to say that one should always write programs
+in the most abstract way possible; expert programmers know how to choose the level of abstraction appropriate to their task.
+But it is important to be able to think in terms of these abstractions, so that we can be ready to apply them in new contexts.
+The significance of higher-order functions is that they enable us to represent these abstractions explicitly as elements in our
 programming language, so that they can be handled just like other computational elements.
 
-In general, programming languages impose restrictions on the ways in which computational elements can be manipulated. 
-Elements with the fewest restrictions are said to have first-class status. Some of the "rights and privileges" of first-class 
+In general, programming languages impose restrictions on the ways in which computational elements can be manipulated.
+Elements with the fewest restrictions are said to have first-class status. Some of the "rights and privileges" of first-class
 elements are:
+
 * They may be referred to using names.
 * They may be passed as arguments to functions.
 * They may be returned as the results of functions.
 * They may be included in data structures.
 
-JavaScript, like other high-level programming languages, awards functions full first-class status. This poses challenges 
+JavaScript, like other high-level programming languages, awards functions full first-class status. This poses challenges
 for efficient implementation, but the resulting gain in expressive power is enormous.
-
-
 
 # Building Abstractions with Data
 
@@ -1494,22 +1474,26 @@ In this chapter we are going to look at more complex data. All the function in c
 
 Why do we want compound data in a programming language? For the same reasons that we want compound functions: to elevate the conceptual level at which we can design our programs, to increase the modularity of our designs, and to enhance the expressive power of our language. Just as the ability to declare functions enables us to deal with processes at a higher conceptual level than that of the primitive operations of the language, the ability to construct compound data objects enables us to deal with data at a higher conceptual level than that of the primitive data objects of the language.
 
-Consider the task of designing a system to perform arithmetic with rational numbers. We could imagine an operation add_rat that takes two rational numbers and produces their sum. In terms of simple data, a rational number can be thought of as two integers: a numerator and a denominator.Thus, we could design a program in which each rational number would be represented by two integers (a numerator and a denominator) and where add_rat would be implemented by two functions (one producing the numerator of the sum and one producing the denominator). But this would be awkward, because we would then need to explicitly keep track of which numerators corresponded to which denominators. In a system intended to perform many operations on many rational numbers, such bookkeeping details would clutter the programs substantially, to say nothing of what they would do to our minds.  It would be much better if we could "glue together" a numerator and denominator to form a pair—a compound data object—that our programs could manipulate in a way that would be consistent with regarding a rational number as a single conceptual unit. 
+Consider the task of designing a system to perform arithmetic with rational numbers. We could imagine an operation add_rat that takes two rational numbers and produces their sum. In terms of simple data, a rational number can be thought of as two integers: a numerator and a denominator.Thus, we could design a program in which each rational number would be represented by two integers (a numerator and a denominator) and where add_rat would be implemented by two functions (one producing the numerator of the sum and one producing the denominator). But this would be awkward, because we would then need to explicitly keep track of which numerators corresponded to which denominators. In a system intended to perform many operations on many rational numbers, such bookkeeping details would clutter the programs substantially, to say nothing of what they would do to our minds.  It would be much better if we could "glue together" a numerator and denominator to form a pair—a compound data object—that our programs could manipulate in a way that would be consistent with regarding a rational number as a single conceptual unit.
 
-The use of compound data also enables us to increase the modularity of our programs. If we can manipulate rational numbers directly as objects in their own right, then we can separate the part of our program that deals with rational numbers per se from the details of how rational numbers may be represented as pairs of integers. The general technique of isolating the parts of a program that deal with how data objects are represented from the parts of a program that deal with how data objects are used is a powerful design methodology called data abstraction. We will see how data abstraction makes programs much easier to design, maintain, and modify. 
+The use of compound data also enables us to increase the modularity of our programs. If we can manipulate rational numbers directly as objects in their own right, then we can separate the part of our program that deals with rational numbers per se from the details of how rational numbers may be represented as pairs of integers. The general technique of isolating the parts of a program that deal with how data objects are represented from the parts of a program that deal with how data objects are used is a powerful design methodology called data abstraction. We will see how data abstraction makes programs much easier to design, maintain, and modify.
 
 The use of compound data leads to a real increase in the expressive power of our programming language.  Consider the idea of forming a "linear combination"ax+by. We might like to write a function that would accept aaa, bbb, xxx, and yyy as arguments and return the value of ax+by. This presents no difficulty if the arguments are to be numbers, because we can readily declare the function
-``` js
+
+```js
 function linear_combination(a, b, x, y) {
   return a * x + b * y
 }
 ```
-But suppose we are not concerned only with numbers. Suppose we would like to describe a process that forms linear combinations whenever addition and multiplication are defined—for rational numbers, complex numbers, polynomials, or whatever. We could express this as a function of the form 
-``` js
+
+But suppose we are not concerned only with numbers. Suppose we would like to describe a process that forms linear combinations whenever addition and multiplication are defined—for rational numbers, complex numbers, polynomials, or whatever. We could express this as a function of the form
+
+```js
 function linear_combination(a, b, x, y) {
     return add(mul(a, x), mul(b, y));
 }
 ```
+
 where add and mul are not the primitive functions + and * but rather more complex things that will perform the appropriate operations for whatever kinds of data we pass in as the arguments a, b, x, and y. The key point is that the only thing linear_combination should need to know about a, b, x, and y is that the functions add and mul will perform the appropriate manipulations. From the perspective of the functionlinear_combination, it is irrelevant what a, b, x, and y are and even more irrelevant how they might happen to be represented in terms of more primitive data. This same example shows why it is important that our programming language provide the ability to manipulate compound objects directly: Without this, there is no way for a function such as linear_combination to pass its arguments along to add and mul without having to know their detailed structure.
 
 We begin this chapter by implementing the rational-number arithmetic system mentioned above. This will form the background for our discussion of compound data and data abstraction. As with compound functions, the main issue to be addressed is that of abstraction as a technique for coping with complexity, and we will see how data abstraction enables us to erect suitable abstraction barriers between different parts of a program.
@@ -1521,6 +1505,7 @@ We will then augment the representational power of our language by introducing s
 Next we will take up the problem of working with data that may be represented differently by different parts of a program. This leads to the need to implement generic operations, which must handle many different types of data. Maintaining modularity in the presence of generic operations requires more powerful abstraction barriers than can be erected with simple data abstraction alone. In particular, we introduce data-directed programming as a technique that allows individual data representations to be designed in isolation and then combined additively (i.e., without modification). To illustrate the power of this approach to system design, we close the chapter by applying what we have learned to the implementation of a package for performing symbolic arithmetic on polynomials, in which the coefficients of the polynomials can be integers, rational numbers, complex numbers, and even other polynomials.
 
 ## Introduction to Data Abstraction
+
 We noted that a function used as an element in creating a more complex function could be regarded not only as a collection of particular operations but also as a functional abstraction.
 That is, the details of how the function was implemented could be suppressed, and the particular function itself could be replaced by any other function with the same overall behavior.
 In other words, we could make an abstraction that would separate the way the function would be used from the details of how the function would be implemented in terms of more primitive functions.
@@ -1529,9 +1514,11 @@ The analogous notion for compound data is called data abstraction. Data abstract
 The basic idea of data abstraction is to structure the programs that are to use compound data objects so that they operate on "abstract data." That is, our programs should use data in such a way as to make no assumptions about the data that are not strictly necessary for performing the task at hand. At the same time, a "concrete" data representation is defined independent of the programs that use the data. The interface between these two parts of our system will be a set of functions, called selectors and constructors, that implement the abstract data in terms of the concrete representation. To illustrate this technique, we will consider how to design a set of functions for manipulating rational numbers.
 
 ### Example: Arithmetic Operations for Rational Numbers
+
 Suppose we want to do arithmetic with rational numbers. We want to be able to add, subtract, multiply, and divide them and to test whether two rational numbers are equal.
 
 Let us begin by assuming that we already have a way of constructing a rational number from a numerator and a denominator. We also assume that, given a rational number, we have a way of extracting (or selecting) its numerator and its denominator. Let us further assume that the constructor and selectors are available as functions:
+
 * make_rat(n, d) returns the rational number whose numerator is the integer n and whose denominator is the integer d.
 * numer(x) returns the numerator of the rational number x
 * denom(x) returns the denominator of the rational number x.
@@ -1539,6 +1526,7 @@ Let us begin by assuming that we already have a way of constructing a rational n
 We are using here a powerful strategy of synthesis: wishful thinking. We haven't yet said how a rational number is represented, or how the functions numer, denom, and make_rat should be implemented.Even so, if we did have these three functions, we could then add, subtract, multiply, divide, and test equality by using the following relations:
 ![](chap2/2.1.1.png)
 We can express these rules as functions:
+
 ```js
 function add_rat(x, y) {
     return make_rat(numer(x) * denom(y) + numer(y) * denom(x),
@@ -1560,19 +1548,24 @@ function equal_rat(x, y) {
     return numer(x) * denom(y) === numer(y) * denom(x);
 }
 ```
+
 Now we have the operations on rational numbers defined in terms of the selector and constructor functions numer, denom, and make_rat. But we haven't yet defined these. What we need is some way to glue together a numerator and a denominator to form a rational number.
 
 #### Pairs
+
 To enable us to implement the concrete level of our data abstraction, our JavaScript environment provides a compound structure called a pair, which can be constructed with the primitive function pair. This function takes two arguments and returns a compound data object that contains the two arguments as parts. Given a pair, we can extract the parts using the primitive functions head and tail.
 Thus, we can use pair,head, and tail as follows:
-``` js
+
+```js
 const x = pair(1, 2);
 head(x); // 1
 tail(x); // 2
 ```
+
 Notice that a pair is a data object that can be given a name and manipulated, just like a primitive data object.
 Moreover, pair can be used to form pairs whose elements are pairs, and so on:
-``` js
+
+```js
 const x = pair(1, 2);
 
 const y = pair(3, 4);
@@ -1582,12 +1575,15 @@ const z = pair(x, y);
 head(head(z)); // 1
 head(tail(z)); // 3
 ```
+
 The single compound-data primitive pair, implemented by the functions pair,head, and tail, is the only glue we need. Data objects constructed from pairs are called list-structured data.
 
 #### Representing rational numbers
+
 Pairs offer a natural way to complete the rational-number system. Simply represent a rational number as a pair of two integers: a numerator and a denominator.
 Then make_rat,numer, and denom are readily implemented as follows:
-```js 
+
+```js
 function make_rat(n, d) {
     return pair(n, d);
 }
@@ -1600,23 +1596,30 @@ function denom(x) {
     return tail(x);
 }
 ```
-Also, in order to display the results of our computations, we can print rational numbers by printing the numerator, a slash, and the denominator. We use the primitive function stringify to turn any value (here a number) into a string. 
+
+Also, in order to display the results of our computations, we can print rational numbers by printing the numerator, a slash, and the denominator. We use the primitive function stringify to turn any value (here a number) into a string.
 The operator + in JavaScript is overloaded; it can be applied to two numbers or to two strings, and in the latter case it returns the result of concatenating the two strings
+
 ```js
 function print_rat(x) {
   return display(stringify(number(x)) + " / " + stringify(denom(x)));
 }
 ```
+
 Now we can try our rational-number functions
+
 ```js
 const one_half = make_rat(1, 2);
 const one_third = make_rat(1, 3);
 print_rat(one_half);
 ```
+
 ```js
 print_rat(add_rat(one_third, ont_third)); // "6 / 9"
 ```
+
 As the final example shows, our rational-number implementation does not reduce rational numbers to lowest terms. We can remedy this by changing make_rat. If we have a gcd function that produces the greatest common divisor of two integers, we can use gcd to reduce the numerator and the denominator to lowest terms before constructing the pair
+
 ```js
 function make_rat(n, d) {
   const g = gcd(n, d)
@@ -1625,12 +1628,14 @@ function make_rat(n, d) {
 ```
 
 ### Abstraction Barriers
+
 Before continuing with more examples of compound data and data abstraction, let us consider some of the issues raised by the rational-number example. We defined the rational-number operations in terms of a constructor make_rat and selectors numer and denom. In general, the underlying idea of data abstraction is to identify for each type of data object a basic set of operations in terms of which all manipulations of data objects of that type will be expressed, and then to use only those operations in manipulating the data.
 ![](chap2/figure2.2.png)
 We can envision the structure of the rational-number system as shown . The horizontal lines represent abstraction barriers that isolate different "levels" of the system. At each level, the barrier separates the programs (above) that use the data abstraction from the programs (below) that implement the data abstraction. Programs that use rational numbers manipulate them solely in terms of the functions supplied "for public use" by the rational-number package:
 add_rat,sub_rat,mul_rat,div_rat, and equal_rat.These, in turn, are implemented solely in terms of the constructor and selectors make_rat,numer, and denom, which themselves are implemented in terms of pairs. The details of how pairs are implemented are irrelevant to the rest of the rational-number package so long as pairs can be manipulated by the use of pair,head, and tail. In effect, functions at each level are the interfaces that define the abstraction barriers and connect the different levels.
 This simple idea has many advantages. One advantage is that it makes programs much easier to maintain and to modify. Any complex data structure can be represented in a variety of ways with the primitive data structures provided by a programming language. Of course, the choice of representation influences the programs that operate on it; thus, if the representation were to be changed at some later time, all such programs might have to be modified accordingly. This task could be time-consuming and expensive in the case of large programs unless the dependence on the representation were to be confined by design to a very few program modules.
 For example, an alternate way to address the problem of reducing rational numbers to lowest terms is to perform the reduction whenever we access the parts of a rational number, rather than when we construct it. This leads to different constructor and selector functions:
+
 ```js
 function make_rat(n, d) {
     return pair(n, d);
@@ -1646,10 +1651,12 @@ function denom(x) {
     return tail(x) / g;
 }
 ```
+
 The difference between this implementation and the previous one lies in when we compute the gcd. If in our typical use of rational numbers we access the numerators and denominators of the same rational numbers many times, it would be preferable to compute the gcd when the rational numbers are constructed. If not, we may be better off waiting until access time to compute the gcd. In any case, when we change from one representation to the other, the functions add_rat,sub_rat, and so on do not have to be modified at all.
 Constraining the dependence on the representation to a few interface functions helps us design programs as well as modify them, because it allows us to maintain the flexibility to consider alternate implementations. To continue with our simple example, suppose we are designing a rational-number package and we can't decide initially whether to perform the gcd at construction time or at selection time. The data-abstraction methodology gives us a way to defer that decision without losing the ability to make progress on the rest of the system.
 
 ### What Is Meant by Data?
+
 We began the rational-number implementation  by implementing the rational-number operations add_rat,sub_rat, and so on in terms of three unspecified functions:make_rat,numer, and denom. At that point, we could think of the operations as being defined in terms of data objects—numerators, denominators, and rational numbers—whose behavior was specified by the latter three functions.
 But exactly what is meant by data? It is not enough to say "whatever is implemented by the given selectors and constructors." Clearly, not every arbitrary set of three functions can serve as an appropriate basis for the rational-number implementation.Clearly, not every arbitrary set of three functions can serve as an appropriate basis for the rational-number implementation.We need to guarantee that, if we construct a rational number x from a pair of integers n and d, then extracting the numer and the denom of x and dividing them should yield the same result as dividing n by d.
 In other words, make_rat,numer, and denom must satisfy the condition that,for any integer n and any nonzero integer d, if x is make_rat(n, d), then
@@ -1660,6 +1667,7 @@ In fact, this is the only condition make_rat,numer, and denom must fulfill in or
 This point of view can serve to define not only "high-level" data objects, such as rational numbers, but lower-level objects as well. Consider the notion of a pair, which we used in order to define our rational numbers. We never actually said what a pair was, only that the language supplied functions pair,head, and tail for operating on pairs. But the only thing we need to know about these three operations is that if we glue two objects together using pair we can retrieve the objects using head and tail.
 That is, the operations satisfy the condition that, for any objects x and y, if z is pair(x, y) then head(z) is x and tail(z) is y.Indeed, we mentioned that these three functions are included as primitives in our language. However, any triple of functions that satisfies the above condition can be used as the basis for implementing pairs.
 This point is illustrated strikingly by the fact that we could implement pair,head, and tail without using any data structures at all but only using functions.Here are the definitions
+
 ```js
 function pair(x, y) {
     function dispatch(m) {
@@ -1681,12 +1689,52 @@ function tail(z) {
 }
 
 ```
+
 This use of functions corresponds to nothing like our intuitive notion of what data should be. Nevertheless, all we need to do to show that this is a valid way to represent pairs is to verify that these functions satisfy the condition given above.
 The subtle point to notice is that the value returned by pair(x, y) is a function—namely the internally defined functiond ispatch, which takes one argument and returns either x or y depending on whether the argument is 0 or 1.
 Correspondingly, head(z) is defined to apply z to 0. Hence, if z is the function formed by pair(x, y), then z applied to 0 will yield x. Thus, we have shown that head(pair(x, y)) yields x, as desired. Similarly, tail(pair(x, y)) applies the function returned by pair(x, y) to 1, which returns y. Therefore, this functional implementation of pairs is a valid implementation, and if we access pairs using only pair,head, and tail we cannot distinguish this implementation from one that uses "real" data structures.
 The point of exhibiting the functional representation of pairs is not that our language works this way (an efficient implementation of pairs might use JavaScript's native vector data structure) but that it could work this way. The functional representation, although obscure, is a perfectly adequate way to represent pairs, since it fulfills the only conditions that pairs need to fulfill. This example also demonstrates that the ability to manipulate functions as objects automatically provides the ability to represent compound data.
 This may seem a curiosity now, but functional representations of data will play a central role in our programming repertoire.
 
-## Reference 
+### Extended Exercise: Interval Arithmetic
+Alyssa P. Hacker is designing a system to help people solve engineering problems. One feature she wants to provide in her system is the ability to manipulate inexact quantities (such as measured parameters of physical devices) with known precision, so that when computations are done with such approximate quantities the results will be numbers of known precision.
+
+Electrical engineers will be using Alyssa's system to compute electrical quantities. It is sometimes necessary for them to compute the value of a parallel equivalent resistance $R_p$ of two resistors $R_1$ and $R_2$ using the formula
+$$
+R_p = \frac{1}{\frac{1}{R_1} + \frac{1}{R_2}}
+$$
+
+Resistance values are usually known only up to some tolerance guaranteed by the manufacturer of the resistor. For example, if you buy a resistor labeled "6.8 ohms with 10% tolerance" you can only be sure that the resistor has a resistance between $6.8-0.68=6.12$ and $6.8+0.68=7.48$ ohms. Thus, if you have a 6.8-ohm 10% resistor in parallel with a 4.7-ohm 5% resistor, the resistance of the combination can range from about 2.58 ohms (if the two resistors are at the lower bounds) to about 2.97 ohms (if the two resistors are at the upper bounds).
+
+Alyssa's idea is to implement "interval arithmetic" as a set of arithmetic operations for combining "intervals" (objects that represent the range of possible values of an inexact quantity). The result of adding, subtracting, multiplying, or dividing two intervals is itself an interval, representing the range of the result.
+
+Alyssa postulates the existence of an abstract object called an "interval" that has two endpoints: a lower bound and an upper bound. She also presumes that, given the endpoints of an interval, she can construct the interval using the data constructor *make_interval*. Alyssa first writes a function for adding two intervals. She reasons that the minimum value the sum could be is the sum of the two lower bounds and the maximum value it could be is the sum of the two upper bounds:
+``` js
+function add_interval(x, y) {
+  return make_interval(lower_bound(x) + lower_bound(y),
+                        upper_bound(x) + upper_bound(y));
+}
+```
+Alyssa also works out the product of two intervals by finding the minimum and the maximum of the products of the bounds and using them as the bounds of the resulting interval. (The functions *math_min* and *math_max* are primitives that find the minimum or maximum of any number of arguments.)
+
+```js 
+function mul_interval(x, y) {
+  const p1 = lower_bound(x) * lower_bound(y);
+  const p2 = lower_bound(x) * lower_bound(y);
+  const p3 = lower_bound(x) * lower_bound(y);
+  const p4 = lower_bound(x) * lower_bound(y);
+  return make_interval(math_min(p1, p2, p3, p4),
+                        math_max(p1, p2, p3, p4));
+}
+```
+To divide two intervals, Alyssa multiplies the first by the reciprocal of the second. Note that the bounds of the reciprocal interval are the reciprocal of the upper bound and the reciprocal of the lower bound, in that order.
+``` js
+function div_interval(x, y) {
+  return mul_interval(x, make_interval(1 / upper_bound(y),
+                                        1 / lower_bound(y)));
+}
+```
+
+## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
