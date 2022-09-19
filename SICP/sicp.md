@@ -1735,6 +1735,17 @@ function div_interval(x, y) {
 }
 ```
 
+### Hierarchical Data and the Closure Property
+As we have seen, pairs provide a primitive "glue" that we can use to construct compound data objects. Below shows a standard way to visualize a pair—in this case, the pair formed by *pair(1, 2)*. In this representation, which is called box-and-pointer notation, each compound object is shown as a pointer to a box. The box for a pair has two parts, the left part containing the head of the pair and the right part containing the tail.
+
+![](chap2/figure-2.4.png)
+We have already seen that *pair* can be used to combine not only numbers but pairs as well.As a consequence, pairs provide a universal building block from which we can construct all sorts of data structures.Below shows two ways to use pairs to combine the numbers 1, 2, 3, and 4.
+![](chap2/figure-2.6.png)
+
+The ability to create pairs whose elements are pairs is the essence of list structure's importance as a representational tool. We refer to this ability as the closure property of *pair*. In general, an operation for combining data objects satisfies the closure property if the results of combining things with that operation can themselves be combined using the same operation.1 Closure is the key to power in any means of combination because it permits us to create hierarchical structures—structures made up of parts, which themselves are made up of parts, and so on.
+
+From the outset of chapter 1, we've made essential use of closure in dealing with functions, because all but the very simplest programs rely on the fact that the elements of a combination can themselves be combinations. In this section, we take up the consequences of closure for compound data. We describe some conventional techniques for using pairs to represent sequences and trees, and we exhibit a graphics language that illustrates closure in a vivid way.
+
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
