@@ -1513,7 +1513,7 @@ The analogous notion for compound data is called data abstraction. Data abstract
 
 The basic idea of data abstraction is to structure the programs that are to use compound data objects so that they operate on "abstract data." That is, our programs should use data in such a way as to make no assumptions about the data that are not strictly necessary for performing the task at hand. At the same time, a "concrete" data representation is defined independent of the programs that use the data. The interface between these two parts of our system will be a set of functions, called selectors and constructors, that implement the abstract data in terms of the concrete representation. To illustrate this technique, we will consider how to design a set of functions for manipulating rational numbers.
 
-### Example: Arithmetic Operations for Rational Numbers
+#### Example: Arithmetic Operations for Rational Numbers
 
 Suppose we want to do arithmetic with rational numbers. We want to be able to add, subtract, multiply, and divide them and to test whether two rational numbers are equal.
 
@@ -1551,7 +1551,7 @@ function equal_rat(x, y) {
 
 Now we have the operations on rational numbers defined in terms of the selector and constructor functions numer, denom, and make_rat. But we haven't yet defined these. What we need is some way to glue together a numerator and a denominator to form a rational number.
 
-#### Pairs
+##### Pairs
 
 To enable us to implement the concrete level of our data abstraction, our JavaScript environment provides a compound structure called a pair, which can be constructed with the primitive function pair. This function takes two arguments and returns a compound data object that contains the two arguments as parts. Given a pair, we can extract the parts using the primitive functions head and tail.
 Thus, we can use pair,head, and tail as follows:
@@ -1578,7 +1578,7 @@ head(tail(z)); // 3
 
 The single compound-data primitive pair, implemented by the functions pair,head, and tail, is the only glue we need. Data objects constructed from pairs are called list-structured data.
 
-#### Representing rational numbers
+##### Representing rational numbers
 
 Pairs offer a natural way to complete the rational-number system. Simply represent a rational number as a pair of two integers: a numerator and a denominator.
 Then make_rat,numer, and denom are readily implemented as follows:
@@ -1627,7 +1627,7 @@ function make_rat(n, d) {
 }
 ```
 
-### Abstraction Barriers
+#### Abstraction Barriers
 
 Before continuing with more examples of compound data and data abstraction, let us consider some of the issues raised by the rational-number example. We defined the rational-number operations in terms of a constructor make_rat and selectors numer and denom. In general, the underlying idea of data abstraction is to identify for each type of data object a basic set of operations in terms of which all manipulations of data objects of that type will be expressed, and then to use only those operations in manipulating the data.
 ![](chap2/figure2.2.png)
@@ -1655,7 +1655,7 @@ function denom(x) {
 The difference between this implementation and the previous one lies in when we compute the gcd. If in our typical use of rational numbers we access the numerators and denominators of the same rational numbers many times, it would be preferable to compute the gcd when the rational numbers are constructed. If not, we may be better off waiting until access time to compute the gcd. In any case, when we change from one representation to the other, the functions add_rat,sub_rat, and so on do not have to be modified at all.
 Constraining the dependence on the representation to a few interface functions helps us design programs as well as modify them, because it allows us to maintain the flexibility to consider alternate implementations. To continue with our simple example, suppose we are designing a rational-number package and we can't decide initially whether to perform the gcd at construction time or at selection time. The data-abstraction methodology gives us a way to defer that decision without losing the ability to make progress on the rest of the system.
 
-### What Is Meant by Data?
+#### What Is Meant by Data?
 
 We began the rational-number implementation  by implementing the rational-number operations add_rat,sub_rat, and so on in terms of three unspecified functions:make_rat,numer, and denom. At that point, we could think of the operations as being defined in terms of data objects—numerators, denominators, and rational numbers—whose behavior was specified by the latter three functions.
 But exactly what is meant by data? It is not enough to say "whatever is implemented by the given selectors and constructors." Clearly, not every arbitrary set of three functions can serve as an appropriate basis for the rational-number implementation.Clearly, not every arbitrary set of three functions can serve as an appropriate basis for the rational-number implementation.We need to guarantee that, if we construct a rational number x from a pair of integers n and d, then extracting the numer and the denom of x and dividing them should yield the same result as dividing n by d.
@@ -1696,7 +1696,7 @@ Correspondingly, head(z) is defined to apply z to 0. Hence, if z is the function
 The point of exhibiting the functional representation of pairs is not that our language works this way (an efficient implementation of pairs might use JavaScript's native vector data structure) but that it could work this way. The functional representation, although obscure, is a perfectly adequate way to represent pairs, since it fulfills the only conditions that pairs need to fulfill. This example also demonstrates that the ability to manipulate functions as objects automatically provides the ability to represent compound data.
 This may seem a curiosity now, but functional representations of data will play a central role in our programming repertoire.
 
-### Extended Exercise: Interval Arithmetic
+#### Extended Exercise: Interval Arithmetic
 Alyssa P. Hacker is designing a system to help people solve engineering problems. One feature she wants to provide in her system is the ability to manipulate inexact quantities (such as measured parameters of physical devices) with known precision, so that when computations are done with such approximate quantities the results will be numbers of known precision.
 
 Electrical engineers will be using Alyssa's system to compute electrical quantities. It is sometimes necessary for them to compute the value of a parallel equivalent resistance $R_p$ of two resistors $R_1$ and $R_2$ using the formula
@@ -1745,6 +1745,41 @@ We have already seen that *pair* can be used to combine not only numbers but pai
 The ability to create pairs whose elements are pairs is the essence of list structure's importance as a representational tool. We refer to this ability as the closure property of *pair*. In general, an operation for combining data objects satisfies the closure property if the results of combining things with that operation can themselves be combined using the same operation.1 Closure is the key to power in any means of combination because it permits us to create hierarchical structures—structures made up of parts, which themselves are made up of parts, and so on.
 
 From the outset of chapter 1, we've made essential use of closure in dealing with functions, because all but the very simplest programs rely on the fact that the elements of a combination can themselves be combinations. In this section, we take up the consequences of closure for compound data. We describe some conventional techniques for using pairs to represent sequences and trees, and we exhibit a graphics language that illustrates closure in a vivid way.
+
+#### Representing Sequences
+One of the useful structures we can build with pairs is a sequence—an ordered collection of data objects. There are, of course, many ways to represent sequences in terms of pairs.
+One particularly straightforward representation is illustrated in below, where the sequence 1, 2, 3, 4 is represented as a chain of pairs. The *head* of each pair is the corresponding item in the chain, and the *tail* of the pair is the next pair in the chain. The *tail* of the final pair signals the end of the sequence, represented in box-and-pointer diagrams as a diagonal line and in programs as JavaScript's primitive value *null*. The entire sequence is constructed by nested *pair* operations:
+``` js
+pair(1,
+      pair(2,
+            pair(3,
+                  pair(4,null))));
+```
+![](chap2/figure-2.8.png)
+Such a sequence of pairs, formed by nested *pair* applications, is called a list, and our JavaScript environment provides a primitive called *list* to help in constructing lists. The above sequence could be produced by list(1, 2, 3, 4). In general,
+list($a_1$, $a_2$, ..., $a_n$)
+is equivalent to 
+pair($a_1$, pair($a_2$, pair(..., pair($a_n$, null)...)))
+Our interpreter prints pairs using a textual representation of box-and-pointer diagrams that we call box notation. The result of *pair(1, 2)* is printed as *[1, 2]*, and the data object in figure 2.8 is printed as *[1, [2, [3, [4, null]]]]*
+```js
+const one_through_four = list(1, 2, 3, 4);
+one_through_four; // [1,[2,[3,[4, null]]]
+```
+We can think of *head* as selecting the first item in the list, and of *tail* as selecting the sublist consisting of all but the first item. Nested applications of *head* and *tail* can be used to extract the second, third, and subsequent items in the list. The constructor *pair* makes a list like the original one, but with an additional item at the beginning.
+``` js
+head(one_through_four); // 1
+tail(one_through_four); // [2,[3,[4, null]]]
+head(tail(one_through_four)); // 2
+pair(10, one_through_four); // [10, [1, [2, [3, [4, null]]]]]
+pair(5, one_through_four); // [5,[1, [2, [3, [4, null]]]]]
+```
+The value *null*, used to terminate the chain of pairs, can be thought of as a sequence of no elements, the empty list.
+ox notation is sometimes difficult to read. When we want to indicate the list nature of a data structure, we will employ the alternative list notation: Whenever possible, list notation uses applications of *list* whose evaluation would result in the desired structure. For example, instead of the box notation
+[1, [[2,3], [[4, [5, null]], [6, null]]]]
+we write
+list(1, [2,3], list(4, 5), 6)
+in list notation
+
 
 ## Reference
 
