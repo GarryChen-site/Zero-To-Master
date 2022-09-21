@@ -1780,6 +1780,66 @@ we write
 list(1, [2,3], list(4, 5), 6)
 in list notation
 
+##### List operations
+The use of pairs to represent sequences of elements as lists is accompanied by conventional programming techniques for manipulating lists by successively using *tail* to walk down the lists. For example, the function *list_ref* takes as arguments a list and a number *n* and returns the *n*th item of the list. It is customary to number the elements of the list beginning with 0. The method for computing *list_ref* is the following:
+* For *n = 0*, *list_ref* should return the *head* of the list
+* Otherwise, *list_ref* should return the (n-1)st item of the *tail* of the list
+
+``` js
+function list_ref(items, n) {
+  return n === 0
+          ? head(items)
+          : list_ref(tail(items), n - 1);
+}
+
+const squares = list(1, 4, 9, 16, 25);
+list_ref(squares, 3); // 16
+```
+Often we walk down the whole list. To aid in this, our JavaScript environment includes a primitive predicate *is_null*, which tests whether its argument is the empty list. The function *length*, which returns the number of items in a list, illustrates this typical pattern of use:
+``` js
+function length(items) {
+  return is_null(items) 
+        ? 0
+        : 1 + length(tail(itewms));
+}
+const odds = list(1, 3, 5, 7);
+length(odds); //4
+```
+The *length* function implements a simple recursive plan. The reduction step is:
+* The *length* of any list is 1 plus the *length* of the *tail* of the list
+This is applied successively until we reach the base case:
+* The *length* of the empty list is 0
+
+We could also compute *length* in an iterative style:
+``` js
+function length(items) {
+  function length_iter(a, count) {
+    return is_null(a)
+          ? count
+          : length_iter(tail(a), count + 1);
+  }
+  return length_iter(items,0);
+}
+```
+Another conventional programming technique is to construct an answer list by adjoining elements to the front of the list with *pair* while walking down a list using *tail*, as in the function *append*, which takes two lists as arguments and combines their elements to make a new list:
+``` js
+append(squares, odds); // list(1, 4, 9, 16, 25, 1, 3, 5, 7)
+
+append(odds, squares); // list(1, 3, 5, 7, 1, 4, 9, 16, 25)
+```
+The function *append* is also implemented using a recursive plan. To *append* lists *list1* and *list2*, do the following:
+* if *list1* is the empty list,then the result is just *list2*
+* Otherwise, *append* the *tail* of *list1* and *list2*, and adjoin the *head* of *list1* to the result:
+  
+``` js
+function append(list1, list2) {
+  return is_null(list1)
+          ? list2
+          : pair(head(list1), append(tail(list1), list2));
+}
+```
+
+
 
 ## Reference
 
