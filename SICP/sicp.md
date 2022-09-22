@@ -1838,7 +1838,44 @@ function append(list1, list2) {
           : pair(head(list1), append(tail(list1), list2));
 }
 ```
+#### Hierarchical Structure
+The representation of sequences in terms of lists generalizes naturally to represent sequences whose elements may themselves be sequences.For example, we can regard the object [[1, [2, null]], [3, [4, null]]] constructed by
+``` js
+pair(list(1, 2), list(3, 4)); 
+```
+as a list of three items, the first of which is itself a list, [1, [2, null]].
+![](chap2/figure-2.10.png)
+Another way to think of sequences whose elements are sequences is as *trees*. The elements of the sequence are the branches of the tree, and elements that are themselves sequences are subtrees. 
+![](chap2/figure-2.12.png)
+Recursion is a natural tool for dealing with tree structures, since we can often reduce operations on trees to operations on their branches, which reduce in turn to operations on the branches of the branches, and so on, until we reach the leaves of the tree.
+``` js
+const x = pair(list(1,2), list(3,4));
+length(x); // 3
+count_leaves(x); // 4
+list(x, x); // list(list(list(1,2), 3, 4), list(list(1, 2), 3, 4))
+length(list(x, x)); // 2
+count_leaves(list(x, x)); // 8
+```
+To implement *count_leaves*, recall the recursive plan for computing *length*:
+* The *length* of list *x* is 1 plus the *length* of the *tail* of *x*
+* The *length* of the empty list is 0.
+The function *count_leaves* is similar. The value for the empty list is the same:
+* *count_leaves* of the empty list is 0
+But in the reduction step, where we strip off the *head* of the list, we must take into account that the *head* may itself be a tree whose leaves we need to count. Thus, the appropriate reduction step is
+* *count_leaves* of a tree *x* is *count_leaves* of the *head* of x plus *count_leaves* of the *tail* of x.
+Finally, by taking *head*s we reach actual leaves, so we need another base case:
+* *count_leaves* of a leaf is 1
 
+To aid in writing recursive functions on trees, JavaScript environment provides the primitive predicate *is_pair*, which tests whether its arguments is a pair.
+``` js
+function count_leaves(x) {
+  return is_null(x)
+        ? 0
+        : ! is_pair(x)
+        ? 1
+        : count_leaves(head(x)) + count_leaves(tail(x));
+}
+```
 
 
 ## Reference
