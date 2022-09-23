@@ -1876,7 +1876,52 @@ function count_leaves(x) {
         : count_leaves(head(x)) + count_leaves(tail(x));
 }
 ```
+#### Sequences as Conventional Interfaces
+In working with compound data, we've stressed how data abstraction permits us to design programs without becoming enmeshed in the details of data representations, and how abstraction preserves for us the flexibility to experiment with alternative representations. In this section, we introduce another powerful design principle for working with data structures—the use of conventional interfaces.
 
+We saw how program abstractions, implemented as higher-order functions, can capture common patterns in programs that deal with numerical data. Our ability to formulate analogous operations for working with compound data depends crucially on the style in which we manipulate our data structures.Consider, for example, the following function, analogous to the *count_leaves* function,which takes a tree as argument and computes the sum of the squares of the leaves that are odd:
+``` js
+function sum_odd_squares(tree) {
+  return is_null(tree)
+        ? 0
+        : ! is_pair(tree)
+        ? is_odd(tree) ? square(tree) : 0
+        : sum_odd_squares(head(tree)) + 
+          sum_odd_squares(tail(tree));
+}
+```
+On the surface, this function is very different from the following one, which constructs a list of all the even Fibonacci numbers Fib(k), where k is less than or equal to given integer n:
+``` js
+function even_fibs(n) {
+  function next(k) {
+    if (k > n) {
+      return null;
+    } esle {
+      const f = fib(k);
+      return is_even(f)
+              ? pair(f, next(k + 1))
+              : next(k + 1);
+    }
+  }
+  return next(0);
+}
+```
+Despite the fact that these two functions are structurally very different, a more abstract description of the two computations reveals a great deal of similarity. The first program
+* enumerates the leaves of a tree;
+* filters them, selecting the odd ones;
+* squares each of the selected ones; and
+* accumulates the results using +, starting with 0.
+The second program
+* enumerates the integers from 0 to n;
+* computes the Fibonacci number for each integer;
+* filters them, selecting the even ones; and
+* accumulates the results using pair, starting with the empty list.
+
+A signal-processing engineer would find it natural to conceptualize these processes in terms of signals flowing through a cascade of stages, each of which implements part of the program plan, as shown below
+![](chap2/figure-2.14.png)
+
+In *sum_odd_squares*, we begin with an enumerator, which generates a "signal" consisting of the leaves of a given tree. This signal is passed through a *filter*, which eliminates all but the odd elements. The resulting signal is in turn passed through a *map*, which is a "transducer" that applies the *square* function to each element. The output of the map is then fed to an accumulator, which combines the elements using +, starting from an initial 0. The plan for *even_fibs* is analogous.
+Unfortunately, the two function declarations above fail to exhibit this signal-flow structure. For instance, if we examine the *sum_odd_squares* function, we find that the enumeration is implemented partly by the *is_null* and *is_pair* tests and partly by the tree-recursive structure of the function. Similarly, the accumulation is found partly in the tests and partly in the addition used in the recursion. In general, there are no distinct parts of either function that correspond to the elements in the signal-flow description. Our two functions decompose the computations in a different way, spreading the enumeration over the program and mingling it with the map, the filter, and the accumulation. If we could organize our programs to make the signal-flow structure manifest in the functions we write, this would increase the conceptual clarity of the resulting program.
 
 ## Reference
 
