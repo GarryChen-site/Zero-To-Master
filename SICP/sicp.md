@@ -1923,6 +1923,114 @@ A signal-processing engineer would find it natural to conceptualize these proces
 In *sum_odd_squares*, we begin with an enumerator, which generates a "signal" consisting of the leaves of a given tree. This signal is passed through a *filter*, which eliminates all but the odd elements. The resulting signal is in turn passed through a *map*, which is a "transducer" that applies the *square* function to each element. The output of the map is then fed to an accumulator, which combines the elements using +, starting from an initial 0. The plan for *even_fibs* is analogous.
 Unfortunately, the two function declarations above fail to exhibit this signal-flow structure. For instance, if we examine the *sum_odd_squares* function, we find that the enumeration is implemented partly by the *is_null* and *is_pair* tests and partly by the tree-recursive structure of the function. Similarly, the accumulation is found partly in the tests and partly in the addition used in the recursion. In general, there are no distinct parts of either function that correspond to the elements in the signal-flow description. Our two functions decompose the computations in a different way, spreading the enumeration over the program and mingling it with the map, the filter, and the accumulation. If we could organize our programs to make the signal-flow structure manifest in the functions we write, this would increase the conceptual clarity of the resulting program.
 
+##### Sequence Operations
+The key to organizing programs so as to more clearly reflect the signal-flow structure is to concentrate on the "signals" that flow from one stage in the process to the next. If we represent these signals as lists, then we can use list operations to implement the processing at each of the stages.
+For instance, we can implement the mapping stages of the signal-flow diagrams using the *map* function
+``` js
+map(square, list(1,2,3,4,5)); // list(1, 4, 9, 16, 25)
+```
+Filtering a sequence to select only those elements that satisfy a given predicate is accomplished by
+``` js
+function filter(predicate, sequence) {
+  return is_null(sequqnce)
+        ? null
+        : predicate(head(sequence))
+        ? pair(head(sequence),
+              filter(predicate, tail(sequence)))
+        : filter(predicate, tail(sequence));
+}
+filter(is_odd, list(1,2,3,4,5)); // list(1,3,5)
+```
+Accumulations can be implemented by
+``` js
+function accumulate(op, initial, sequence) {
+  return is_null(sequence)
+        ? initial
+        : op(head(sequence),
+              accumulate(op, initial, tail(sequence)));
+}
+accumulate(plus, 0, list(1,2,3,4,5)); //15
+accumulate(times, 1, list(1,2,3,4,5)); // 120
+accumulate(pair, null, list(1,2,3,4,5)); // list(1,2,3,4,5)
+```
+All that remains to implement signal-flow diagrams is to enumerate the sequence of elements to be processed. For *even_fibs*, we need to generate the sequence of integers in a given range, which we can do as follows:
+``` js
+function enumerate_interval(low, high) {
+  return low > high
+        ? null
+        : pair(low, enumerate_interval(low + 1, high));
+}
+enumerate_interval(2,7); // list(2,3,4,5,6,7)
+```
+To enumerate the leaves of a tree, we can use
+``` js
+function enumerate_tree(tree) {
+  return is_null(tree)
+        ? null 
+        : ! is_pair(tree)
+        ? list(tree)
+        : append(enumerate_tree(head(tree)),
+                enumerate_tree(tail(tree)));
+}
+enumerate_tree(list(1, list(2, list(3,4)), 5); // list(1,2,3,4,5)
+```
+Now we can reformulate *sum_odd_squares* and *even_fibs* as in the signal-flow diagrams. For *sum_odd_squares*, we enumerate the sequence of leaves of the tree, filter this to keep only the odd numbers in the sequence, square each element, and sum the results:
+``` js
+function sum_odd_squares(tree) {
+  return accumulate(plus,
+                    0,
+                    map(square,
+                        filter(is_odd, 
+                                enumerate_tree(tree))));
+}
+```
+For *even_fibs*, we enumerate the integers from 0 to *n*, generate the Fibonacci number for each of these integers, filter the resulting sequence to keep only the even elements, and accumulate the results into a list:
+``` js
+function even_fibs(n) {
+  return accumulate(pair,
+                    null,
+                    filter(is_even,
+                          map(fib,
+                              enumerate_interval(0, n))));
+}
+```
+The value of expressing programs as sequence operations is that this helps us make program designs that are modular, that is, designs that are constructed by combining relatively independent pieces. We can encourage modular design by providing a library of standard components together with a conventional interface for connecting the components in flexible ways.
+
+Modular construction is a powerful strategy for controlling complexity in engineering design. In real signal-processing applications, for example, designers regularly build systems by cascading elements selected from standardized families of filters and transducers. Similarly, sequence operations provide a library of standard program elements that we can mix and match. For instance, we can reuse pieces from the *sum_odd_squares* and *even_fibs* functions in a program that constructs a list of the squares of the first *n+1* Fibonacci numbers:
+``` js
+function list_fib_square(n) {
+  return accumulate(pair,
+                    null,
+                    map(square,
+                      map(fib,
+                            enumerate_interval(0,n))));
+}
+list_fib_squares(10); // list(0,1,1,4,9,25,64,169,441,1156,3025)
+```
+We can rearrange the pieces and use them in computing the product of the squares of the odd integers in a sequence:
+``` js
+function product_of_squares_of_odd_elements(sequence) {
+  return accumulate(items,
+                    1,
+                    map(square,
+                        filter(is_odd, sequence)));
+}
+product_of_squares_of_odd_elements(list(1,2,3,4,5)); // 225
+```
+We can also formulate conventional data-processing applications in terms of sequence operations. Suppose we have a sequence of personnel records and we want to find the salary of the highest-paid programmer.Assume that we have a *selector* salary that returns the salary of a record, and a predicate *is_programmer* that tests if a record is for a programmer. Then we can write
+``` js
+function salary_of_highest_paid_programmer(records) {
+  return accumulate(math_max, 
+                    0,
+                    map(salary,
+                        filter(is_programmer, records)));
+}
+```
+These examples give just a hint of the vast range of operations that can be expressed as sequence operations.
+
+Sequences, implemented here as lists, serve as a conventional interface that permits us to combine processing modules. Additionally, when we uniformly represent structures as sequences, we have localized the data-structure dependencies in our programs to a small number of sequence operations. By changing these, we can experiment with alternative representations of sequences, while leaving the overall design of our programs intact. 
+
+
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
