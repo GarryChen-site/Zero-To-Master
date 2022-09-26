@@ -2030,7 +2030,21 @@ These examples give just a hint of the vast range of operations that can be expr
 
 Sequences, implemented here as lists, serve as a conventional interface that permits us to combine processing modules. Additionally, when we uniformly represent structures as sequences, we have localized the data-structure dependencies in our programs to a small number of sequence operations. By changing these, we can experiment with alternative representations of sequences, while leaving the overall design of our programs intact. 
 
+#### Example: A Picture Language
+This section presents a simple language for drawing pictures that illustrates the power of data abstraction and closure, and also exploits higher-order functions in an essential way. The language is designed to make it easy to experiment with patterns such as the ones in figure below, which are composed of repeated elements that are shifted and scaled.
 
+![](chap2/figure-2.16.png)
+
+In this language, the data objects being combined are represented as functions rather than as list structure. Just as pair, which satisfies the closure property, allowed us to easily build arbitrarily complicated list structure, the operations in this language, which also satisfy the closure property, allow us to easily build arbitrarily complicated patterns.
+
+##### The picture language
+When we began our study of programming , we emphasized the importance of describing a language by focusing on the language's primitives, its means of combination, and its means of abstraction. We'll follow that framework here.
+Part of the elegance of this picture language is that there is only one kind of element, called a painter. A painter draws an image that is shifted and scaled to fit within a designated parallelogram-shaped frame. For example, there's a primitive painter we'll call wave that makes a crude line drawing, as shown in below
+![](chap2/figure-2.17.png)
+The actual shape of the drawing depends on the frame—all four images in figure 2.17 are produced by the same wave painter, but with respect to four different frames. Painters can be more elaborate than this: The primitive painter called rogers paints a picture of MIT's founder, William Barton Rogers, as shown in figure 2.18.2 The four images in figure 2.18 are drawn with respect to the same four frames as the wave images in figure 2.17.
+![](chap2/figure-2.18.png)
+
+To combine images, we use various operations that construct new painters from given painters. For example, the beside operation takes two painters and produces a new, compound painter that draws the first painter's image in the left half of the frame and the second painter's image in the right half of the frame. Similarly, below takes two painters and produces a compound painter that draws the first painter's image below the second painter's image. Some operations transform a single painter to produce a new painter. For example, flip_vert takes a painter and produces a painter that draws its image upside-down, and flip_horiz produces a painter that draws the original painter's image left-to-right reversed.
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
