@@ -2045,6 +2045,62 @@ The actual shape of the drawing depends on the frame—all four images in figure
 ![](chap2/figure-2.18.png)
 
 To combine images, we use various operations that construct new painters from given painters. For example, the beside operation takes two painters and produces a new, compound painter that draws the first painter's image in the left half of the frame and the second painter's image in the right half of the frame. Similarly, below takes two painters and produces a compound painter that draws the first painter's image below the second painter's image. Some operations transform a single painter to produce a new painter. For example, flip_vert takes a painter and produces a painter that draws its image upside-down, and flip_horiz produces a painter that draws the original painter's image left-to-right reversed.
+
+Below shows the drawing of a painter called *wave4* that is built up in two stages starting from *wave*:
+``` js
+const wave2 = beside(wave, flip_vert(wave));
+const wave4 = below(wave2, wave2);
+```
+In building up a complex image in this manner we are exploiting the fact that painters are closed under the language's means of combination. The *beside* or *below* of two painters is itself a painter; therefore, we can use it as an element in making more complex painters. As with building up list structure using *pair*, the closure of our data under the means of combination is crucial to the ability to create complex structures while using only a few operations.
+![](chap2/figure-2.19.png)
+Once we can combine painters, we would like to be able to abstract typical patterns of combining painters. We will implement the painter operations as JavaScript functions. This means that we don't need a special abstraction mechanism in the picture language: Since the means of combination are ordinary JavaScript functions, we automatically have the capability to do anything with painter operations that we can do with functions. For example, we can abstract the pattern in *wave4* as
+``` js
+function flipped_pairs(painter) {
+  const painter2 = beside(painter, flip_vert(painter));
+  return below(painter2, painter2);
+}
+```
+and declare *wave4* as an instance of this pattern:
+``` js
+const wave4 = flipped_pairs(wave);
+```
+![](chap2/figure-2.21.png)
+We can also define recursive operations. Here's one that makes painters split and branch towards the right as shown in figures 2.21 and 2.23:
+``` js
+function right_split(painter, n) {
+  if (n === 0) {
+    return painter;
+  } else {
+    const smaller = right_split(painter, n - 1);
+    return beside(painter, below(smaller, smaller));
+  }
+}
+```
+We can produce balanced patterns by branching upwards as well as towards the right
+``` js
+function corner_split(painter, n) {
+  if ( n === 0) {
+    return painter;
+  } else {
+    const up = up_split(painter, n - 1);
+    const right = right_split(painter, n - 1);
+    const top_left = beside(up, up);
+    const bottom_right = below(right, right);
+    const corner = corner_split(painter, n - 1);
+    return beside(below(painter, top_left),
+                  below(bottom_right, corner));
+  }
+}
+```
+![](chap2/figure-2.23.png)
+By placing four copies of a *corner_split* appropriately, we obtain a pattern called *square_limit*
+``` js
+function square_limit(painter, n) {
+  const quarter = corner_split(painter, n)
+  const half = beside(flip_horiz(quarter), quarter);
+  return below(flip_vert(half), half);
+}
+```
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
