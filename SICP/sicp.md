@@ -1697,9 +1697,11 @@ The point of exhibiting the functional representation of pairs is not that our l
 This may seem a curiosity now, but functional representations of data will play a central role in our programming repertoire.
 
 #### Extended Exercise: Interval Arithmetic
+
 Alyssa P. Hacker is designing a system to help people solve engineering problems. One feature she wants to provide in her system is the ability to manipulate inexact quantities (such as measured parameters of physical devices) with known precision, so that when computations are done with such approximate quantities the results will be numbers of known precision.
 
 Electrical engineers will be using Alyssa's system to compute electrical quantities. It is sometimes necessary for them to compute the value of a parallel equivalent resistance $R_p$ of two resistors $R_1$ and $R_2$ using the formula
+
 $$
 R_p = \frac{1}{\frac{1}{R_1} + \frac{1}{R_2}}
 $$
@@ -1709,15 +1711,17 @@ Resistance values are usually known only up to some tolerance guaranteed by the 
 Alyssa's idea is to implement "interval arithmetic" as a set of arithmetic operations for combining "intervals" (objects that represent the range of possible values of an inexact quantity). The result of adding, subtracting, multiplying, or dividing two intervals is itself an interval, representing the range of the result.
 
 Alyssa postulates the existence of an abstract object called an "interval" that has two endpoints: a lower bound and an upper bound. She also presumes that, given the endpoints of an interval, she can construct the interval using the data constructor *make_interval*. Alyssa first writes a function for adding two intervals. She reasons that the minimum value the sum could be is the sum of the two lower bounds and the maximum value it could be is the sum of the two upper bounds:
-``` js
+
+```js
 function add_interval(x, y) {
   return make_interval(lower_bound(x) + lower_bound(y),
                         upper_bound(x) + upper_bound(y));
 }
 ```
+
 Alyssa also works out the product of two intervals by finding the minimum and the maximum of the products of the bounds and using them as the bounds of the resulting interval. (The functions *math_min* and *math_max* are primitives that find the minimum or maximum of any number of arguments.)
 
-```js 
+```js
 function mul_interval(x, y) {
   const p1 = lower_bound(x) * lower_bound(y);
   const p2 = lower_bound(x) * lower_bound(y);
@@ -1727,8 +1731,10 @@ function mul_interval(x, y) {
                         math_max(p1, p2, p3, p4));
 }
 ```
+
 To divide two intervals, Alyssa multiplies the first by the reciprocal of the second. Note that the bounds of the reciprocal interval are the reciprocal of the upper bound and the reciprocal of the lower bound, in that order.
-``` js
+
+```js
 function div_interval(x, y) {
   return mul_interval(x, make_interval(1 / upper_bound(y),
                                         1 / lower_bound(y)));
@@ -1736,6 +1742,7 @@ function div_interval(x, y) {
 ```
 
 ### Hierarchical Data and the Closure Property
+
 As we have seen, pairs provide a primitive "glue" that we can use to construct compound data objects. Below shows a standard way to visualize a pair—in this case, the pair formed by *pair(1, 2)*. In this representation, which is called box-and-pointer notation, each compound object is shown as a pointer to a box. The box for a pair has two parts, the left part containing the head of the pair and the right part containing the tail.
 
 ![](chap2/figure-2.4.png)
@@ -1747,32 +1754,39 @@ The ability to create pairs whose elements are pairs is the essence of list stru
 From the outset of chapter 1, we've made essential use of closure in dealing with functions, because all but the very simplest programs rely on the fact that the elements of a combination can themselves be combinations. In this section, we take up the consequences of closure for compound data. We describe some conventional techniques for using pairs to represent sequences and trees, and we exhibit a graphics language that illustrates closure in a vivid way.
 
 #### Representing Sequences
+
 One of the useful structures we can build with pairs is a sequence—an ordered collection of data objects. There are, of course, many ways to represent sequences in terms of pairs.
 One particularly straightforward representation is illustrated in below, where the sequence 1, 2, 3, 4 is represented as a chain of pairs. The *head* of each pair is the corresponding item in the chain, and the *tail* of the pair is the next pair in the chain. The *tail* of the final pair signals the end of the sequence, represented in box-and-pointer diagrams as a diagonal line and in programs as JavaScript's primitive value *null*. The entire sequence is constructed by nested *pair* operations:
-``` js
+
+```js
 pair(1,
       pair(2,
             pair(3,
                   pair(4,null))));
 ```
+
 ![](chap2/figure-2.8.png)
 Such a sequence of pairs, formed by nested *pair* applications, is called a list, and our JavaScript environment provides a primitive called *list* to help in constructing lists. The above sequence could be produced by list(1, 2, 3, 4). In general,
 list($a_1$, $a_2$, ..., $a_n$)
-is equivalent to 
+is equivalent to
 pair($a_1$, pair($a_2$, pair(..., pair($a_n$, null)...)))
 Our interpreter prints pairs using a textual representation of box-and-pointer diagrams that we call box notation. The result of *pair(1, 2)* is printed as *[1, 2]*, and the data object in figure 2.8 is printed as *[1, [2, [3, [4, null]]]]*
+
 ```js
 const one_through_four = list(1, 2, 3, 4);
 one_through_four; // [1,[2,[3,[4, null]]]
 ```
+
 We can think of *head* as selecting the first item in the list, and of *tail* as selecting the sublist consisting of all but the first item. Nested applications of *head* and *tail* can be used to extract the second, third, and subsequent items in the list. The constructor *pair* makes a list like the original one, but with an additional item at the beginning.
-``` js
+
+```js
 head(one_through_four); // 1
 tail(one_through_four); // [2,[3,[4, null]]]
 head(tail(one_through_four)); // 2
 pair(10, one_through_four); // [10, [1, [2, [3, [4, null]]]]]
 pair(5, one_through_four); // [5,[1, [2, [3, [4, null]]]]]
 ```
+
 The value *null*, used to terminate the chain of pairs, can be thought of as a sequence of no elements, the empty list.
 ox notation is sometimes difficult to read. When we want to indicate the list nature of a data structure, we will employ the alternative list notation: Whenever possible, list notation uses applications of *list* whose evaluation would result in the desired structure. For example, instead of the box notation
 [1, [[2,3], [[4, [5, null]], [6, null]]]]
@@ -1781,11 +1795,13 @@ list(1, [2,3], list(4, 5), 6)
 in list notation
 
 ##### List operations
+
 The use of pairs to represent sequences of elements as lists is accompanied by conventional programming techniques for manipulating lists by successively using *tail* to walk down the lists. For example, the function *list_ref* takes as arguments a list and a number *n* and returns the *n*th item of the list. It is customary to number the elements of the list beginning with 0. The method for computing *list_ref* is the following:
+
 * For *n = 0*, *list_ref* should return the *head* of the list
 * Otherwise, *list_ref* should return the (n-1)st item of the *tail* of the list
 
-``` js
+```js
 function list_ref(items, n) {
   return n === 0
           ? head(items)
@@ -1795,8 +1811,10 @@ function list_ref(items, n) {
 const squares = list(1, 4, 9, 16, 25);
 list_ref(squares, 3); // 16
 ```
+
 Often we walk down the whole list. To aid in this, our JavaScript environment includes a primitive predicate *is_null*, which tests whether its argument is the empty list. The function *length*, which returns the number of items in a list, illustrates this typical pattern of use:
-``` js
+
+```js
 function length(items) {
   return is_null(items) 
         ? 0
@@ -1805,13 +1823,16 @@ function length(items) {
 const odds = list(1, 3, 5, 7);
 length(odds); //4
 ```
+
 The *length* function implements a simple recursive plan. The reduction step is:
+
 * The *length* of any list is 1 plus the *length* of the *tail* of the list
-This is applied successively until we reach the base case:
+  This is applied successively until we reach the base case:
 * The *length* of the empty list is 0
 
 We could also compute *length* in an iterative style:
-``` js
+
+```js
 function length(items) {
   function length_iter(a, count) {
     return is_null(a)
@@ -1821,34 +1842,43 @@ function length(items) {
   return length_iter(items,0);
 }
 ```
+
 Another conventional programming technique is to construct an answer list by adjoining elements to the front of the list with *pair* while walking down a list using *tail*, as in the function *append*, which takes two lists as arguments and combines their elements to make a new list:
-``` js
+
+```js
 append(squares, odds); // list(1, 4, 9, 16, 25, 1, 3, 5, 7)
 
 append(odds, squares); // list(1, 3, 5, 7, 1, 4, 9, 16, 25)
 ```
+
 The function *append* is also implemented using a recursive plan. To *append* lists *list1* and *list2*, do the following:
+
 * if *list1* is the empty list,then the result is just *list2*
 * Otherwise, *append* the *tail* of *list1* and *list2*, and adjoin the *head* of *list1* to the result:
-  
-``` js
+
+```js
 function append(list1, list2) {
   return is_null(list1)
           ? list2
           : pair(head(list1), append(tail(list1), list2));
 }
 ```
+
 #### Hierarchical Structure
+
 The representation of sequences in terms of lists generalizes naturally to represent sequences whose elements may themselves be sequences.For example, we can regard the object [[1, [2, null]], [3, [4, null]]] constructed by
-``` js
+
+```js
 pair(list(1, 2), list(3, 4)); 
 ```
+
 as a list of three items, the first of which is itself a list, [1, [2, null]].
 ![](chap2/figure-2.10.png)
-Another way to think of sequences whose elements are sequences is as *trees*. The elements of the sequence are the branches of the tree, and elements that are themselves sequences are subtrees. 
+Another way to think of sequences whose elements are sequences is as *trees*. The elements of the sequence are the branches of the tree, and elements that are themselves sequences are subtrees.
 ![](chap2/figure-2.12.png)
 Recursion is a natural tool for dealing with tree structures, since we can often reduce operations on trees to operations on their branches, which reduce in turn to operations on the branches of the branches, and so on, until we reach the leaves of the tree.
-``` js
+
+```js
 const x = pair(list(1,2), list(3,4));
 length(x); // 3
 count_leaves(x); // 4
@@ -1856,18 +1886,21 @@ list(x, x); // list(list(list(1,2), 3, 4), list(list(1, 2), 3, 4))
 length(list(x, x)); // 2
 count_leaves(list(x, x)); // 8
 ```
+
 To implement *count_leaves*, recall the recursive plan for computing *length*:
+
 * The *length* of list *x* is 1 plus the *length* of the *tail* of *x*
 * The *length* of the empty list is 0.
-The function *count_leaves* is similar. The value for the empty list is the same:
+  The function *count_leaves* is similar. The value for the empty list is the same:
 * *count_leaves* of the empty list is 0
-But in the reduction step, where we strip off the *head* of the list, we must take into account that the *head* may itself be a tree whose leaves we need to count. Thus, the appropriate reduction step is
+  But in the reduction step, where we strip off the *head* of the list, we must take into account that the *head* may itself be a tree whose leaves we need to count. Thus, the appropriate reduction step is
 * *count_leaves* of a tree *x* is *count_leaves* of the *head* of x plus *count_leaves* of the *tail* of x.
-Finally, by taking *head*s we reach actual leaves, so we need another base case:
+  Finally, by taking *head*s we reach actual leaves, so we need another base case:
 * *count_leaves* of a leaf is 1
 
 To aid in writing recursive functions on trees, JavaScript environment provides the primitive predicate *is_pair*, which tests whether its arguments is a pair.
-``` js
+
+```js
 function count_leaves(x) {
   return is_null(x)
         ? 0
@@ -1876,11 +1909,14 @@ function count_leaves(x) {
         : count_leaves(head(x)) + count_leaves(tail(x));
 }
 ```
+
 #### Sequences as Conventional Interfaces
+
 In working with compound data, we've stressed how data abstraction permits us to design programs without becoming enmeshed in the details of data representations, and how abstraction preserves for us the flexibility to experiment with alternative representations. In this section, we introduce another powerful design principle for working with data structures—the use of conventional interfaces.
 
 We saw how program abstractions, implemented as higher-order functions, can capture common patterns in programs that deal with numerical data. Our ability to formulate analogous operations for working with compound data depends crucially on the style in which we manipulate our data structures.Consider, for example, the following function, analogous to the *count_leaves* function,which takes a tree as argument and computes the sum of the squares of the leaves that are odd:
-``` js
+
+```js
 function sum_odd_squares(tree) {
   return is_null(tree)
         ? 0
@@ -1890,8 +1926,10 @@ function sum_odd_squares(tree) {
           sum_odd_squares(tail(tree));
 }
 ```
+
 On the surface, this function is very different from the following one, which constructs a list of all the even Fibonacci numbers Fib(k), where k is less than or equal to given integer n:
-``` js
+
+```js
 function even_fibs(n) {
   function next(k) {
     if (k > n) {
@@ -1906,12 +1944,14 @@ function even_fibs(n) {
   return next(0);
 }
 ```
+
 Despite the fact that these two functions are structurally very different, a more abstract description of the two computations reveals a great deal of similarity. The first program
+
 * enumerates the leaves of a tree;
 * filters them, selecting the odd ones;
 * squares each of the selected ones; and
 * accumulates the results using +, starting with 0.
-The second program
+  The second program
 * enumerates the integers from 0 to n;
 * computes the Fibonacci number for each integer;
 * filters them, selecting the even ones; and
@@ -1924,13 +1964,17 @@ In *sum_odd_squares*, we begin with an enumerator, which generates a "signal" co
 Unfortunately, the two function declarations above fail to exhibit this signal-flow structure. For instance, if we examine the *sum_odd_squares* function, we find that the enumeration is implemented partly by the *is_null* and *is_pair* tests and partly by the tree-recursive structure of the function. Similarly, the accumulation is found partly in the tests and partly in the addition used in the recursion. In general, there are no distinct parts of either function that correspond to the elements in the signal-flow description. Our two functions decompose the computations in a different way, spreading the enumeration over the program and mingling it with the map, the filter, and the accumulation. If we could organize our programs to make the signal-flow structure manifest in the functions we write, this would increase the conceptual clarity of the resulting program.
 
 ##### Sequence Operations
+
 The key to organizing programs so as to more clearly reflect the signal-flow structure is to concentrate on the "signals" that flow from one stage in the process to the next. If we represent these signals as lists, then we can use list operations to implement the processing at each of the stages.
 For instance, we can implement the mapping stages of the signal-flow diagrams using the *map* function
-``` js
+
+```js
 map(square, list(1,2,3,4,5)); // list(1, 4, 9, 16, 25)
 ```
+
 Filtering a sequence to select only those elements that satisfy a given predicate is accomplished by
-``` js
+
+```js
 function filter(predicate, sequence) {
   return is_null(sequqnce)
         ? null
@@ -1941,8 +1985,10 @@ function filter(predicate, sequence) {
 }
 filter(is_odd, list(1,2,3,4,5)); // list(1,3,5)
 ```
+
 Accumulations can be implemented by
-``` js
+
+```js
 function accumulate(op, initial, sequence) {
   return is_null(sequence)
         ? initial
@@ -1953,8 +1999,10 @@ accumulate(plus, 0, list(1,2,3,4,5)); //15
 accumulate(times, 1, list(1,2,3,4,5)); // 120
 accumulate(pair, null, list(1,2,3,4,5)); // list(1,2,3,4,5)
 ```
+
 All that remains to implement signal-flow diagrams is to enumerate the sequence of elements to be processed. For *even_fibs*, we need to generate the sequence of integers in a given range, which we can do as follows:
-``` js
+
+```js
 function enumerate_interval(low, high) {
   return low > high
         ? null
@@ -1962,8 +2010,10 @@ function enumerate_interval(low, high) {
 }
 enumerate_interval(2,7); // list(2,3,4,5,6,7)
 ```
+
 To enumerate the leaves of a tree, we can use
-``` js
+
+```js
 function enumerate_tree(tree) {
   return is_null(tree)
         ? null 
@@ -1974,8 +2024,10 @@ function enumerate_tree(tree) {
 }
 enumerate_tree(list(1, list(2, list(3,4)), 5); // list(1,2,3,4,5)
 ```
+
 Now we can reformulate *sum_odd_squares* and *even_fibs* as in the signal-flow diagrams. For *sum_odd_squares*, we enumerate the sequence of leaves of the tree, filter this to keep only the odd numbers in the sequence, square each element, and sum the results:
-``` js
+
+```js
 function sum_odd_squares(tree) {
   return accumulate(plus,
                     0,
@@ -1984,8 +2036,10 @@ function sum_odd_squares(tree) {
                                 enumerate_tree(tree))));
 }
 ```
+
 For *even_fibs*, we enumerate the integers from 0 to *n*, generate the Fibonacci number for each of these integers, filter the resulting sequence to keep only the even elements, and accumulate the results into a list:
-``` js
+
+```js
 function even_fibs(n) {
   return accumulate(pair,
                     null,
@@ -1994,10 +2048,12 @@ function even_fibs(n) {
                               enumerate_interval(0, n))));
 }
 ```
+
 The value of expressing programs as sequence operations is that this helps us make program designs that are modular, that is, designs that are constructed by combining relatively independent pieces. We can encourage modular design by providing a library of standard components together with a conventional interface for connecting the components in flexible ways.
 
 Modular construction is a powerful strategy for controlling complexity in engineering design. In real signal-processing applications, for example, designers regularly build systems by cascading elements selected from standardized families of filters and transducers. Similarly, sequence operations provide a library of standard program elements that we can mix and match. For instance, we can reuse pieces from the *sum_odd_squares* and *even_fibs* functions in a program that constructs a list of the squares of the first *n+1* Fibonacci numbers:
-``` js
+
+```js
 function list_fib_square(n) {
   return accumulate(pair,
                     null,
@@ -2007,8 +2063,10 @@ function list_fib_square(n) {
 }
 list_fib_squares(10); // list(0,1,1,4,9,25,64,169,441,1156,3025)
 ```
+
 We can rearrange the pieces and use them in computing the product of the squares of the odd integers in a sequence:
-``` js
+
+```js
 function product_of_squares_of_odd_elements(sequence) {
   return accumulate(items,
                     1,
@@ -2017,8 +2075,10 @@ function product_of_squares_of_odd_elements(sequence) {
 }
 product_of_squares_of_odd_elements(list(1,2,3,4,5)); // 225
 ```
+
 We can also formulate conventional data-processing applications in terms of sequence operations. Suppose we have a sequence of personnel records and we want to find the salary of the highest-paid programmer.Assume that we have a *selector* salary that returns the salary of a record, and a predicate *is_programmer* that tests if a record is for a programmer. Then we can write
-``` js
+
+```js
 function salary_of_highest_paid_programmer(records) {
   return accumulate(math_max, 
                     0,
@@ -2026,11 +2086,13 @@ function salary_of_highest_paid_programmer(records) {
                         filter(is_programmer, records)));
 }
 ```
+
 These examples give just a hint of the vast range of operations that can be expressed as sequence operations.
 
-Sequences, implemented here as lists, serve as a conventional interface that permits us to combine processing modules. Additionally, when we uniformly represent structures as sequences, we have localized the data-structure dependencies in our programs to a small number of sequence operations. By changing these, we can experiment with alternative representations of sequences, while leaving the overall design of our programs intact. 
+Sequences, implemented here as lists, serve as a conventional interface that permits us to combine processing modules. Additionally, when we uniformly represent structures as sequences, we have localized the data-structure dependencies in our programs to a small number of sequence operations. By changing these, we can experiment with alternative representations of sequences, while leaving the overall design of our programs intact.
 
 #### Example: A Picture Language
+
 This section presents a simple language for drawing pictures that illustrates the power of data abstraction and closure, and also exploits higher-order functions in an essential way. The language is designed to make it easy to experiment with patterns such as the ones in figure below, which are composed of repeated elements that are shifted and scaled.
 
 ![](chap2/figure-2.16.png)
@@ -2038,6 +2100,7 @@ This section presents a simple language for drawing pictures that illustrates th
 In this language, the data objects being combined are represented as functions rather than as list structure. Just as pair, which satisfies the closure property, allowed us to easily build arbitrarily complicated list structure, the operations in this language, which also satisfy the closure property, allow us to easily build arbitrarily complicated patterns.
 
 ##### The picture language
+
 When we began our study of programming , we emphasized the importance of describing a language by focusing on the language's primitives, its means of combination, and its means of abstraction. We'll follow that framework here.
 Part of the elegance of this picture language is that there is only one kind of element, called a painter. A painter draws an image that is shifted and scaled to fit within a designated parallelogram-shaped frame. For example, there's a primitive painter we'll call wave that makes a crude line drawing, as shown in below
 ![](chap2/figure-2.17.png)
@@ -2047,26 +2110,33 @@ The actual shape of the drawing depends on the frame—all four images in figure
 To combine images, we use various operations that construct new painters from given painters. For example, the beside operation takes two painters and produces a new, compound painter that draws the first painter's image in the left half of the frame and the second painter's image in the right half of the frame. Similarly, below takes two painters and produces a compound painter that draws the first painter's image below the second painter's image. Some operations transform a single painter to produce a new painter. For example, flip_vert takes a painter and produces a painter that draws its image upside-down, and flip_horiz produces a painter that draws the original painter's image left-to-right reversed.
 
 Below shows the drawing of a painter called *wave4* that is built up in two stages starting from *wave*:
-``` js
+
+```js
 const wave2 = beside(wave, flip_vert(wave));
 const wave4 = below(wave2, wave2);
 ```
+
 In building up a complex image in this manner we are exploiting the fact that painters are closed under the language's means of combination. The *beside* or *below* of two painters is itself a painter; therefore, we can use it as an element in making more complex painters. As with building up list structure using *pair*, the closure of our data under the means of combination is crucial to the ability to create complex structures while using only a few operations.
 ![](chap2/figure-2.19.png)
 Once we can combine painters, we would like to be able to abstract typical patterns of combining painters. We will implement the painter operations as JavaScript functions. This means that we don't need a special abstraction mechanism in the picture language: Since the means of combination are ordinary JavaScript functions, we automatically have the capability to do anything with painter operations that we can do with functions. For example, we can abstract the pattern in *wave4* as
-``` js
+
+```js
 function flipped_pairs(painter) {
   const painter2 = beside(painter, flip_vert(painter));
   return below(painter2, painter2);
 }
 ```
+
 and declare *wave4* as an instance of this pattern:
-``` js
+
+```js
 const wave4 = flipped_pairs(wave);
 ```
+
 ![](chap2/figure-2.21.png)
 We can also define recursive operations. Here's one that makes painters split and branch towards the right as shown in figures 2.21 and 2.23:
-``` js
+
+```js
 function right_split(painter, n) {
   if (n === 0) {
     return painter;
@@ -2076,8 +2146,10 @@ function right_split(painter, n) {
   }
 }
 ```
+
 We can produce balanced patterns by branching upwards as well as towards the right
-``` js
+
+```js
 function corner_split(painter, n) {
   if ( n === 0) {
     return painter;
@@ -2092,14 +2164,79 @@ function corner_split(painter, n) {
   }
 }
 ```
+
 ![](chap2/figure-2.23.png)
 By placing four copies of a *corner_split* appropriately, we obtain a pattern called *square_limit*
-``` js
+
+```js
 function square_limit(painter, n) {
   const quarter = corner_split(painter, n)
   const half = beside(flip_horiz(quarter), quarter);
   return below(flip_vert(half), half);
 }
+```
+
+##### Higher-order operations
+
+In addition to abstracting patterns of combining painters, we can work at a higher level, abstracting patterns of combining painter operations. That is, we can view the painter operations as elements to manipulate and can write means of combination for these elements—functions that take painter operations as arguments and create new painter operations.
+
+For example, *flipped_pairs* and *square_limit* each arrange four copies of a painter's image in a square pattern; they differ only in how they orient the copies. One way to abstract this pattern of painter combination is with the following function, which takes four one-argument painter operations and produces a painter operation that transforms a given painter with those four operations and arranges the results in a square.The functions *tl*, *tr*, *bl*, and *br* are the transformations to apply to the top left copy, the top right copy, the bottom left copy, and the bottom right copy, respectively.
+
+```js
+function square_of_four(tl, tr, bl, br) {
+  return painter => {
+    const top = beside(tl(painter), tr(painter));
+    const bottom = beside(bl(painter), br(painter));
+    return below(bottom, top);
+  }
+```
+
+Then *flipped_pairs* can be defined in terms of *square_of_four* as follows:
+
+```js
+function flipped_pairs(painter) {
+  const combine4 = square_of_four(identity, flip_vert,
+                                  identity, flip_vert);
+  return combine4(painter);
+}
+```
+
+and *square_limit* can be expressed as
+
+```js
+function square_limit(painter, n) {
+  const combine4 = square_of_four(flip_horiz, identity,
+                                  rotate180, flip_vert);
+  return combine4(corner_split(painter, n));
+}
+```
+
+##### Frames
+
+Before we can show how to implement painters and their means of combination, we must first consider frames. A frame can be described by three vectors—an origin vector and two edge vectors. The origin vector specifies the offset of the frame's origin from some absolute origin in the plane, and the edge vectors specify the offsets of the frame's corners from its origin. If the edges are perpendicular, the frame will be rectangular. Otherwise the frame will be a more general parallelogram.
+
+Figure 2.24 shows a frame and its associated vectors. In accordance with data abstraction, we need not be specific yet about how frames are represented, other than to say that there is a constructor make_frame, which takes three vectors and produces a frame, and three corresponding selectors origin_frame, edge1_frame, and edge2_frame
+![img](chap2/figure-2.24.png)
+We will use coordinates in the unit square (0<=x, y<=1) to specify images. With each frame, we associate a frame coordinate map, which will be used to shift and scale images to fit the frame. The map transforms the unit square into the frame by mapping the vector v=(x,y) to the vector sum
+
+$ Origin(Frame) + x· Edge_1(Frame) + y· Edge_2(Frame) $
+For example, (0, 0) is mapped to the origin of the frame, (1, 1) to the vertex diagonally opposite the origin, and (0.5, 0.5) to the center of the frame. We can create a frame's coordinate map with the following function:
+``` js
+function frame_coord_map(frame) {
+  return v => add_vect(origin_frame(frame),
+                      add_vect(scale_vect(xcor_vext(v),
+                                          edge1_frame(frame)),
+                              scale_vect(ycor_vext(v),
+                                          edge1_frame(frame))));
+}
+```
+Observe that applying frame_coord_map to a frame returns a function that, given a vector, returns a vector. If the argument vector is in the unit square, the result vector will be in the frame. For example,
+``` js
+frame_coord_map(a_frame)(make_vect(0,0));
+```
+returns the same vector as
+``` js
+origin_frame(a_frame);
 ```
 ## Reference
 
