@@ -2238,6 +2238,108 @@ returns the same vector as
 ``` js
 origin_frame(a_frame);
 ```
+##### Painter
+A painter is represented as a function that, given a frame as argument, draws a particular image shifted and scaled to fit the frame. That is to say, if p is a painter and f is a frame, then we produce p's image in f by calling p with f as argument.
+The details of how primitive painters are implemented depend on the particular characteristics of the graphics system and the type of image to be drawn. For instance, suppose we have a function *draw_line* that draws a line on the screen between two specified points. Then we can create painters for line drawings, such as the *wave* painter , from lists of line segments as follows:
+``` js
+function segments_to_painter(segment_list) {
+  return frame => 
+          for_each(segment => 
+                      draw_line(
+                        frame_coord_map(frame)
+                          (start_segment(segemnt)),
+                        frame_coord_map(frame)
+                          (end_segment(segemnt)),
+                      segment_list);
+}
+```
+The segments are given using coordinates with respect to the unit square. For each segment in the list, the painter transforms the segment endpoints with the frame coordinate map and draws a line between the transformed points.
+
+Representing painters as functions erects a powerful abstraction barrier in the picture language. We can create and intermix all sorts of primitive painters, based on a variety of graphics capabilities. The details of their implementation do not matter. Any function can serve as a painter, provided that it takes a frame as argument and draws something scaled to fit the frame.
+
+##### Transforming and combining painter
+An operation on painters (such as flip_vert or beside) works by creating a painter that invokes the original painters with respect to frames derived from the argument frame. Thus, for example, flip_vert doesn't have to know how a painter works in order to flip it—it just has to know how to turn a frame upside down: The flipped painter just uses the original painter, but in the inverted frame.
+
+Painter operations are based on the function *transform_painter*, which takes as arguments a painter and information on how to transform a frame and produces a new painter. The transformed painter, when called on a frame, transforms the frame and calls the original painter on the transformed frame. The arguments to transform_painter are points (represented as vectors) that specify the corners of the new frame: When mapped into the frame, the first point specifies the new frame's origin and the other two specify the ends of its edge vectors. Thus, arguments within the unit square specify a frame contained within the original frame.
+``` js
+function transform_painter(painter, origin, corner1, corner2) {
+  return frame => {
+    const m = frame_coord_map(frame);
+    const new_origin = m(origin);
+    return painter(make_frame(
+                    new_origin,
+                    sub_vect(m(corner1), new_origin),
+                    sub_vect(m(corner2), new_origin)));
+  };
+}
+```
+Here's how to flip painter images vertically:
+``` js
+function flip_vert(painter) {
+  return transform_painter(painter,
+                            make_vect(0,1),
+                            make_vect(1,1),
+                            make_vect(0,0));
+}
+```
+Using transform_painter, we can easily define new transformations. For example, we can declare a painter that shrinks its image to the upper-right quarter of the frame it is given:
+``` js
+function shrink_to_upper_right(painter) {
+  return transform_painter(painter,
+                            make_vect(0.5,0.5),
+                            make_vect(1,0.5),
+                            make_vect(0.5,1));
+}
+```
+Other transformations rotate images counterclockwise by 90 degrees
+``` js
+function rotate90(painter) {
+  return transform_painter(painter,
+                            make_vect(1,0),
+                            make_vect(1,1),
+                            make_vect(0,0));
+}
+```
+or squash images towards the center of the frame
+``` js
+function squash_inwards(painter) {
+  return transform_painter(painter,
+                            make_vect(0,0),
+                            make_vect(0.65,0.35),
+                            make_vect(0.35,0.65));
+}
+```
+Frame transformation is also the key to defining means of combining two or more painters. The *beside* function, for example, takes two painters, transforms them to paint in the left and right halves of an argument frame respectively, and produces a new, compound painter. When the compound painter is given a frame, it calls the first transformed painter to paint in the left half of the frame and calls the second transformed painter to paint in the right half of the frame:
+``` js
+function beside(painter1, painter2) {
+  const split_point = make_vect(0.5,0);
+  const paint_left = transform_painter(painter1,
+                                      make_vect(0,0),
+                                      split_point,
+                                      make_vect(0,1));
+  const paint_right = transform_painter(painter2,
+                                        split_point,
+                                        make_vect(1,0),
+                                        make_vect(0.5,1));
+  return frame => {
+              paint_left(frame);
+              paint_right(frame);
+  };
+}
+```
+Observe how the painter data abstraction, and in particular the representation of painters as functions, makes beside easy to implement. The beside function need not know anything about the details of the component painters other than that each painter will draw something in its designated frame.
+
+##### Levels of language for robust design
+The picture language exploits some of the critical ideas we've introduced about abstraction with functions and data. The fundamental data abstractions, painters, are implemented using functional representations, which enables the language to handle different basic drawing capabilities in a uniform way. The means of combination satisfy the closure property, which permits us to easily build up complex designs. Finally, all the tools for abstracting functions are available to us for abstracting means of combination for painters.
+
+We have also obtained a glimpse of another crucial idea about languages and program design. This is the approach of stratified design, the notion that a complex system should be structured as a sequence of levels that are described using a sequence of languages. Each level is constructed by combining parts that are regarded as primitive at that level, and the parts constructed at each level are used as primitives at the next level. The language used at each level of a stratified design has primitives, means of combination, and means of abstraction appropriate to that level of detail.
+
+Stratified design pervades the engineering of complex systems. For example, in computer engineering, resistors and transistors are combined (and described using a language of analog circuits) to produce parts such as and-gates and or-gates, which form the primitives of a language for digital-circuit design.These parts are combined to build processors, bus structures, and memory systems, which are in turn combined to form computers, using languages appropriate to computer architecture. Computers are combined to form distributed systems, using languages appropriate for describing network interconnections, and so on.
+
+As a tiny example of stratification, our picture language uses primitive elements (primitive painters) that specify points and lines to provide the shapes of a painter like rogers. The bulk of our description of the picture language focused on combining these primitives, using geometric combiners such as beside and below. We also worked at a higher level, regarding beside and below as primitives to be manipulated in a language whose operations, such as square_of_four, capture common patterns of combining geometric combiners.
+
+Stratified design helps make programs robust, that is, it makes it likely that small changes in a specification will require correspondingly small changes in the program. For instance, suppose we wanted to change the image based on wave shown in figure 2.16. We could work at the lowest level to change the detailed appearance of the wave element; we could work at the middle level to change the way corner_split replicates the wave; we could work at the highest level to change how square_limit arranges the four copies of the corner. In general, each level of a stratified design provides a different vocabulary for expressing the characteristics of the system, and a different kind of ability to change it.
+
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
