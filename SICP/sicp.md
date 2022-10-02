@@ -1741,7 +1741,7 @@ function div_interval(x, y) {
 }
 ```
 
-### Hierarchical Data and the Closure Property
+## Hierarchical Data and the Closure Property
 
 As we have seen, pairs provide a primitive "glue" that we can use to construct compound data objects. Below shows a standard way to visualize a pair—in this case, the pair formed by *pair(1, 2)*. In this representation, which is called box-and-pointer notation, each compound object is shown as a pointer to a box. The box for a pair has two parts, the left part containing the head of the pair and the right part containing the tail.
 
@@ -1753,7 +1753,7 @@ The ability to create pairs whose elements are pairs is the essence of list stru
 
 From the outset of chapter 1, we've made essential use of closure in dealing with functions, because all but the very simplest programs rely on the fact that the elements of a combination can themselves be combinations. In this section, we take up the consequences of closure for compound data. We describe some conventional techniques for using pairs to represent sequences and trees, and we exhibit a graphics language that illustrates closure in a vivid way.
 
-#### Representing Sequences
+### Representing Sequences
 
 One of the useful structures we can build with pairs is a sequence—an ordered collection of data objects. There are, of course, many ways to represent sequences in terms of pairs.
 One particularly straightforward representation is illustrated in below, where the sequence 1, 2, 3, 4 is represented as a chain of pairs. The *head* of each pair is the corresponding item in the chain, and the *tail* of the pair is the next pair in the chain. The *tail* of the final pair signals the end of the sequence, represented in box-and-pointer diagrams as a diagonal line and in programs as JavaScript's primitive value *null*. The entire sequence is constructed by nested *pair* operations:
@@ -1794,7 +1794,7 @@ we write
 list(1, [2,3], list(4, 5), 6)
 in list notation
 
-##### List operations
+#### List operations
 
 The use of pairs to represent sequences of elements as lists is accompanied by conventional programming techniques for manipulating lists by successively using *tail* to walk down the lists. For example, the function *list_ref* takes as arguments a list and a number *n* and returns the *n*th item of the list. It is customary to number the elements of the list beginning with 0. The method for computing *list_ref* is the following:
 
@@ -1864,7 +1864,7 @@ function append(list1, list2) {
 }
 ```
 
-#### Hierarchical Structure
+### Hierarchical Structure
 
 The representation of sequences in terms of lists generalizes naturally to represent sequences whose elements may themselves be sequences.For example, we can regard the object [[1, [2, null]], [3, [4, null]]] constructed by
 
@@ -1910,7 +1910,7 @@ function count_leaves(x) {
 }
 ```
 
-#### Sequences as Conventional Interfaces
+### Sequences as Conventional Interfaces
 
 In working with compound data, we've stressed how data abstraction permits us to design programs without becoming enmeshed in the details of data representations, and how abstraction preserves for us the flexibility to experiment with alternative representations. In this section, we introduce another powerful design principle for working with data structures—the use of conventional interfaces.
 
@@ -1963,7 +1963,7 @@ A signal-processing engineer would find it natural to conceptualize these proces
 In *sum_odd_squares*, we begin with an enumerator, which generates a "signal" consisting of the leaves of a given tree. This signal is passed through a *filter*, which eliminates all but the odd elements. The resulting signal is in turn passed through a *map*, which is a "transducer" that applies the *square* function to each element. The output of the map is then fed to an accumulator, which combines the elements using +, starting from an initial 0. The plan for *even_fibs* is analogous.
 Unfortunately, the two function declarations above fail to exhibit this signal-flow structure. For instance, if we examine the *sum_odd_squares* function, we find that the enumeration is implemented partly by the *is_null* and *is_pair* tests and partly by the tree-recursive structure of the function. Similarly, the accumulation is found partly in the tests and partly in the addition used in the recursion. In general, there are no distinct parts of either function that correspond to the elements in the signal-flow description. Our two functions decompose the computations in a different way, spreading the enumeration over the program and mingling it with the map, the filter, and the accumulation. If we could organize our programs to make the signal-flow structure manifest in the functions we write, this would increase the conceptual clarity of the resulting program.
 
-##### Sequence Operations
+#### Sequence Operations
 
 The key to organizing programs so as to more clearly reflect the signal-flow structure is to concentrate on the "signals" that flow from one stage in the process to the next. If we represent these signals as lists, then we can use list operations to implement the processing at each of the stages.
 For instance, we can implement the mapping stages of the signal-flow diagrams using the *map* function
@@ -2091,7 +2091,7 @@ These examples give just a hint of the vast range of operations that can be expr
 
 Sequences, implemented here as lists, serve as a conventional interface that permits us to combine processing modules. Additionally, when we uniformly represent structures as sequences, we have localized the data-structure dependencies in our programs to a small number of sequence operations. By changing these, we can experiment with alternative representations of sequences, while leaving the overall design of our programs intact.
 
-#### Example: A Picture Language
+### Example: A Picture Language
 
 This section presents a simple language for drawing pictures that illustrates the power of data abstraction and closure, and also exploits higher-order functions in an essential way. The language is designed to make it easy to experiment with patterns such as the ones in figure below, which are composed of repeated elements that are shifted and scaled.
 
@@ -2099,7 +2099,7 @@ This section presents a simple language for drawing pictures that illustrates th
 
 In this language, the data objects being combined are represented as functions rather than as list structure. Just as pair, which satisfies the closure property, allowed us to easily build arbitrarily complicated list structure, the operations in this language, which also satisfy the closure property, allow us to easily build arbitrarily complicated patterns.
 
-##### The picture language
+#### The picture language
 
 When we began our study of programming , we emphasized the importance of describing a language by focusing on the language's primitives, its means of combination, and its means of abstraction. We'll follow that framework here.
 Part of the elegance of this picture language is that there is only one kind of element, called a painter. A painter draws an image that is shifted and scaled to fit within a designated parallelogram-shaped frame. For example, there's a primitive painter we'll call wave that makes a crude line drawing, as shown in below
@@ -2176,7 +2176,7 @@ function square_limit(painter, n) {
 }
 ```
 
-##### Higher-order operations
+#### Higher-order operations
 
 In addition to abstracting patterns of combining painters, we can work at a higher level, abstracting patterns of combining painter operations. That is, we can view the painter operations as elements to manipulate and can write means of combination for these elements—functions that take painter operations as arguments and create new painter operations.
 
@@ -2211,7 +2211,7 @@ function square_limit(painter, n) {
 }
 ```
 
-##### Frames
+#### Frames
 
 Before we can show how to implement painters and their means of combination, we must first consider frames. A frame can be described by three vectors—an origin vector and two edge vectors. The origin vector specifies the offset of the frame's origin from some absolute origin in the plane, and the edge vectors specify the offsets of the frame's corners from its origin. If the edges are perpendicular, the frame will be rectangular. Otherwise the frame will be a more general parallelogram.
 
@@ -2238,7 +2238,7 @@ returns the same vector as
 ``` js
 origin_frame(a_frame);
 ```
-##### Painter
+#### Painter
 A painter is represented as a function that, given a frame as argument, draws a particular image shifted and scaled to fit the frame. That is to say, if p is a painter and f is a frame, then we produce p's image in f by calling p with f as argument.
 The details of how primitive painters are implemented depend on the particular characteristics of the graphics system and the type of image to be drawn. For instance, suppose we have a function *draw_line* that draws a line on the screen between two specified points. Then we can create painters for line drawings, such as the *wave* painter , from lists of line segments as follows:
 ``` js
@@ -2257,7 +2257,7 @@ The segments are given using coordinates with respect to the unit square. For ea
 
 Representing painters as functions erects a powerful abstraction barrier in the picture language. We can create and intermix all sorts of primitive painters, based on a variety of graphics capabilities. The details of their implementation do not matter. Any function can serve as a painter, provided that it takes a frame as argument and draws something scaled to fit the frame.
 
-##### Transforming and combining painter
+#### Transforming and combining painter
 An operation on painters (such as flip_vert or beside) works by creating a painter that invokes the original painters with respect to frames derived from the argument frame. Thus, for example, flip_vert doesn't have to know how a painter works in order to flip it—it just has to know how to turn a frame upside down: The flipped painter just uses the original painter, but in the inverted frame.
 
 Painter operations are based on the function *transform_painter*, which takes as arguments a painter and information on how to transform a frame and produces a new painter. The transformed painter, when called on a frame, transforms the frame and calls the original painter on the transformed frame. The arguments to transform_painter are points (represented as vectors) that specify the corners of the new frame: When mapped into the frame, the first point specifies the new frame's origin and the other two specify the ends of its edge vectors. Thus, arguments within the unit square specify a frame contained within the original frame.
@@ -2329,7 +2329,7 @@ function beside(painter1, painter2) {
 ```
 Observe how the painter data abstraction, and in particular the representation of painters as functions, makes beside easy to implement. The beside function need not know anything about the details of the component painters other than that each painter will draw something in its designated frame.
 
-##### Levels of language for robust design
+#### Levels of language for robust design
 The picture language exploits some of the critical ideas we've introduced about abstraction with functions and data. The fundamental data abstractions, painters, are implemented using functional representations, which enables the language to handle different basic drawing capabilities in a uniform way. The means of combination satisfy the closure property, which permits us to easily build up complex designs. Finally, all the tools for abstracting functions are available to us for abstracting means of combination for painters.
 
 We have also obtained a glimpse of another crucial idea about languages and program design. This is the approach of stratified design, the notion that a complex system should be structured as a sequence of levels that are described using a sequence of languages. Each level is constructed by combining parts that are regarded as primitive at that level, and the parts constructed at each level are used as primitives at the next level. The language used at each level of a stratified design has primitives, means of combination, and means of abstraction appropriate to that level of detail.
@@ -2339,6 +2339,44 @@ Stratified design pervades the engineering of complex systems. For example, in c
 As a tiny example of stratification, our picture language uses primitive elements (primitive painters) that specify points and lines to provide the shapes of a painter like rogers. The bulk of our description of the picture language focused on combining these primitives, using geometric combiners such as beside and below. We also worked at a higher level, regarding beside and below as primitives to be manipulated in a language whose operations, such as square_of_four, capture common patterns of combining geometric combiners.
 
 Stratified design helps make programs robust, that is, it makes it likely that small changes in a specification will require correspondingly small changes in the program. For instance, suppose we wanted to change the image based on wave shown in figure 2.16. We could work at the lowest level to change the detailed appearance of the wave element; we could work at the middle level to change the way corner_split replicates the wave; we could work at the highest level to change how square_limit arranges the four copies of the corner. In general, each level of a stratified design provides a different vocabulary for expressing the characteristics of the system, and a different kind of ability to change it.
+
+
+## Symbolic Data
+All the compound data objects we have used so far were constructed ultimately from numbers. In this section we extend the representational capability of our language by introducing the ability to work with strings of characters as data.
+
+### Strings
+So far, we have used strings in order to display messages, using the functions *display* and *error*.We can form compound data using strings and have lists such as
+list("a", "b", "c","d")
+list(23,45,17)
+list(list("Jakob",27), list("Lova",9), list("Luisa",24))
+
+In order to distinguish strings from names, we surround them with double quotation marks. For example, the JavaScript expression z denotes the value of the name z, whereas the JavaScript expression "z" denotes a string that consists of a single character, namely the last letter in the English alphabet in lower case.
+
+Via quotation marks, we can distinguish between strings and names:
+``` js
+const a = 1;
+const b = 2;
+
+list(a, b); // [1,[2,null]]
+
+list("a","b"); // ["a",["b",null]]
+
+list("a", 2); //["a", [2, null]]
+```
+We introduced === and !== as primitive predicates on numbers. From now on, we shall allow two strings as operands of === and !==. The predicate === returns true if and only if the two strings are the same, and !== returns true if and only if the two strings are not the same.Using ===, we can implement a useful function called member. This takes two arguments: a string and a list of strings or a number and a list of numbers. If the first argument is not contained in the list (i.e., is not === to any item in the list), then member returns null. Otherwise, it returns the sublist of the list beginning with the first occurrence of the string or number:
+``` js
+function member(item, x) {
+  return is_null(x)
+        ? null
+        : item === head(x)
+        ? x
+        : member(item, tail(x));
+}
+member("apple", list("pear","banana","prune")) // null
+member("apple", list("x","y","apple","pear")) // list("apple", "pear")
+```
+
+
 
 ## Reference
 
