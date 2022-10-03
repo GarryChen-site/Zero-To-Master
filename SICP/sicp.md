@@ -2375,6 +2375,47 @@ function member(item, x) {
 member("apple", list("pear","banana","prune")) // null
 member("apple", list("x","y","apple","pear")) // list("apple", "pear")
 ```
+### Example: Symbolic Differentiation
+As an illustration of symbol manipulation and a further illustration of data abstraction, consider the design of a function that performs symbolic differentiation of algebraic expressions. We would like the function to take as arguments an algebraic expression and a variable and to return the derivative of the expression with respect to the variable. For example, if the arguments to the function are $ ax^2 + bx + c $ and $x$, the function should return $2ax + b$.Symbolic differentiation is of special historical significance in the programming language Lisp.
+In developing the symbolic-differentiation program, we will first define a differentiation algorithm that operates on abstract objects such as "sums,""products," and "variables" without worrying about how these are to be represented. Only afterward will we address the representation problem.
+#### The differentiation program with abstract data
+To keep things simple, we will consider a very simple symbolic-differentiation program that handles expressions that are built up using only the operations of addition and multiplication with two arguments. Differentiation of any such expression can be carried out by applying the following reduction rules:
+![](chap2/figure-rules.png)
+Observe that the latter two rules are recursive in nature. That is, to obtain the derivative of a sum we first find the derivatives of the terms and add them. Each of the terms may in turn be an expression that needs to be decomposed. Decomposing into smaller and smaller pieces will eventually produce pieces that are either constants or variables, whose derivatives will be either 0 or 1.
+To embody these rules in a function we indulge in a little wishful thinking, as we did in designing the rational-number implementation. If we had a means for representing algebraic expressions, we should be able to tell whether an expression is a sum, a product, a constant, or a variable. We should be able to extract the parts of an expression.For a sum, for example, we want to be able to extract the addend (first term) and the augend (second term). We should also be able to construct expressions from parts. Let us assume that we already have functions to implement the following selectors, constructors, and predicates:
+> is_variable(e)	Is e a variable?
+> is_same_variable(v1, v2)	Are v1 and v2 the same variable?
+> is_sum(e)	Is e a sum?
+> addend(e)	Addend of the sum e.
+> augend(e)	Augend of the sum e.
+> make_sum(a1, a2)	Construct the sum of a1 and a2.
+> is_product(e)	Is e a product?
+> multiplier(e)	Multiplier of the product e.
+> multiplicand(e)	Multiplicand of the product e.
+> make_product(m1, m2)	Construct the product of m1 and m2.
+Using these, and the primitive predicate is_number, which identifies numbers, we can express the differentiation rules as the following function:
+``` js
+function deriv(exp, variable) {
+  return is_number(exp)
+          ? 0
+          : is_variable(exp)
+          ? is_same_variable(exp, variable) ? 1 : 0
+          : is_sum(exp)
+          ? make_sum(deriv(addend(exp), variable),
+                    deriv(augend(exp), variable))
+          : is_product(exp)
+          ? make_sum(make_product(multiplier(exp),
+                                  deriv(multiplicand(exp),
+                                        variable)),
+                      make_produt(deriv(multiplier(exp),
+                                        variable),
+                                  multiplicand(exp)))
+          : error(exp, "unknown expression type -- deriv);
+}
+```
+This *deriv* function incorporates the complete differentiation algorithm. Since it is expressed in terms of abstract data, it will work no matter how we choose to represent algebraic expressions, as long as we design a proper set of selectors and constructors. This is the issue we must address next.
+
+
 
 
 
