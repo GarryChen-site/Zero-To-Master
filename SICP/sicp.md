@@ -2415,8 +2415,66 @@ function deriv(exp, variable) {
 ```
 This *deriv* function incorporates the complete differentiation algorithm. Since it is expressed in terms of abstract data, it will work no matter how we choose to represent algebraic expressions, as long as we design a proper set of selectors and constructors. This is the issue we must address next.
 
+#### Representing algebraic expressions
+We can imagine many ways to use list structure to represent algebraic expressions. For example, we could use lists of symbols that mirror the usual algebraic notation, representing $ax+b$ as list("a", "*", "x", "+", "b"). However, it will be more convenient if we reflect the mathematical structure of the expression in the JavaScript value representing it; that is, to represent $ax+b$ as list("+", list("*", "a", "x"), "b"). Placing a binary operator in front of its operands is called prefix notation.With prefix notation, our data representation for the differentiation problem is as follows:
+* The variables are just strings. They are identified by the primitive predicate is_string:
+``` js
+function is_variable(x) {return is_string(x);}
+```
+* Two variables are the same if the strings representing them are equal:
+``` js
+function is_same_variable(v1, v2) {
+  return is_variable(v1) && is_variable(v2) && v1 === v2;
+}
+```
 
+* Sums and products are constructed as lists:
+``` js
+function make_sum(a1, a2) {
+  return list("+", a1, a2);
+}
 
+function make_product(m1, a=m2) {
+  return list("*", m1, m2);
+}
+```
+* A sum is a list whose first element is the string "+" :
+``` js
+function is_sum(x) {
+  return is_pair(x) && head(x) === "+";
+}
+```
+* The addend is the second item of the sum list:
+``` js
+function added(s) {
+  return head(tail(s));
+}
+```
+* The augend is the third item of the sum list:
+``` js
+function augend(s) {
+  return head(tail(tail(s)));
+}
+```
+* A product is a list whose first element is the string "*" :
+``` js
+function is_product(x) {
+  return is_pair(x) && head(x) === "*";
+}
+```
+* The multiplier is the second item of the product list
+``` js
+function multiplier(s) {
+  return head(tail(s));
+}
+```
+* The multiplicand is the third item of the product list
+``` js
+function multiplicand(s) {
+  return head(tail(tail(s)));
+}
+```
+Thus, we need only combine these with the algorithm as embodied by deriv in order to have a working symbolic-differentiation program. 
 
 
 ## Reference
