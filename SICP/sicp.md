@@ -2476,6 +2476,72 @@ function multiplicand(s) {
 ```
 Thus, we need only combine these with the algorithm as embodied by deriv in order to have a working symbolic-differentiation program. 
 
+``` js
+deriv(list("+","x",3), "x"); // list("+", 1, 0)
+```
+
+``` js
+deriv(list("*", "x", "y"), "x"); // list("+", list("*", "x", 0), list("*", 1, "y"))
+```
+
+``` js
+deriv(list("*", list("*", "x", "y"), list("+", "x", 3)), "x"); 
+```
+list("+", list("*", list("*", "x", "y"), list("+", 1, 0)),
+          list("*", list("+", list("*", "x", 0), list("*", 1, "y")),
+                    list("+", "x", 3)))
+The program produces answers that are correct; however, they are unsimplified. It is true that
+$ \frac{d(xy)}{dx} = x · 0 + 1 · y $
+
+but we would like the program to know that $ x · 0 + 1 · y $, and $ 0 + y  = y $. The answer for the second example should have been simply y. As the third example shows, this becomes a serious issue when the expressions are complex.
+
+Our difficulty is much like the one we encountered with the rational-number implementation: we haven't reduced answers to simplest form. To accomplish the rational-number reduction, we needed to change only the constructors and the selectors of the implementation. We can adopt a similar strategy here. We won't change *deriv* at all. Instead, we will change *make_sum* so that if both summands are numbers, *make_sum* will add them and return their sum. Also, if one of the summands is 0, then *make_sum* will return the other summand.
+``` js
+function make_sum(a1, a2) {
+  return number_equal(a1, 0)
+        ? a2
+        : number_equal(a2, 0)
+        ? a1
+        : is_number(a1) && is_number(a2)
+        ? a1 + a2
+        : list("+", a1, a2);
+}
+```
+This uses the function *number_equal*, which checks whether an expression is equal to a given number:
+``` js
+fucntion number_equal(exp, num) {
+  return is_number(exp) && exp === num;
+}
+```
+Similarly, we will change *make_product* to build in the rules that 0 times anything is 0 and 1 times anything is the thing itself:
+``` js
+function make_product(m1, m2) {
+  return number_equal(m1, 0) || number_equal(m2, 0)
+        ? 0
+        : number_equal(m1, 1)
+        ? m2
+        : number_equal(m2, 1)
+        ? m1
+        : is_number(m1) && is_number(m2)
+        ? m1 * m2
+        : list("*", m1, m2);
+}
+```
+Here is how this version works on our three examples:
+
+``` js
+deriv(list("+", "x", 3), "x"); // 1
+```
+``` js
+deriv(list("*", "x", "y"), "x"); // y
+```
+``` js
+deriv(list("*", list("*", "x", "y"), list("+", "x", 3)), "x"); 
+```
+list("+", list("*", "x", "y"), list("*", "y", list("+", "x", 3)))
+
+Although this is quite an improvement, the third example shows that there is still a long way to go before we get a program that puts expressions into a form that we might agree is "simplest." The problem of algebraic simplification is complex because, among other reasons, a form that may be simplest for one purpose may not be for another.
+
 
 ## Reference
 
