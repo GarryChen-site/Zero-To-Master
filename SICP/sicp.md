@@ -2542,6 +2542,40 @@ list("+", list("*", "x", "y"), list("*", "y", list("+", "x", 3)))
 
 Although this is quite an improvement, the third example shows that there is still a long way to go before we get a program that puts expressions into a form that we might agree is "simplest." The problem of algebraic simplification is complex because, among other reasons, a form that may be simplest for one purpose may not be for another.
 
+### Example: Representing Sets
+In the previous examples we built representations for two kinds of compound data objects: rational numbers and algebraic expressions. In one of these examples we had the choice of simplifying (reducing) the expressions at either construction time or selection time, but other than that the choice of a representation for these structures in terms of lists was straightforward. When we turn to the representation of sets, the choice of a representation is not so obvious. Indeed, there are a number of possible representations, and they differ significantly from one another in several ways.
+Informally, a set is simply a collection of distinct objects. To give a more precise definition we can employ the method of data abstraction. That is, we define "set" by specifying the operations that are to be used on sets. These are union_set,intersection_set, is_element_of_set, and adjoin_set. The function is_element_of_set is a predicate that determines whether a given element is a member of a set. The function adjoin_set takes an object and a set as arguments and returns a set that contains the elements of the original set and also the adjoined element. The function union_set computes the union of two sets, which is the set containing each element that appears in either argument. The function intersection_set computes the intersection of two sets, which is the set containing only elements that appear in both arguments. From the viewpoint of data abstraction, we are free to design any representation that implements these operations in a way consistent with the interpretations given above.
+
+#### Sets as unordered lists
+One way to represent a set is as a list of its elements in which no element appears more than once. The empty set is represented by the empty list.
+``` js
+function is_element_of_set(x, set) {
+  return is_null(set)
+        ? false
+        : equal(x, head(set))
+        ? true
+        : is_element_of_set(x, tail(set));
+}
+```
+Using this, we can write *adjoin_set*. If the object to be adjoined is already in the set, we just return the set.Otherwise, we use *pair* to add the object to the list that represents the set:
+``` js
+function adjoin_set(x, set) {
+  return is_element_of_set(x, set)
+        ? set
+        : pair(x, set);
+}
+```
+For intersection_set we can use a recursive strategy. If we know how to form the intersection of set2 and the tail of set1, we only need to decide whether to include the head of set1 in this. But this depends on whether head(set1) is also in set2. Here is the resulting function:
+``` js
+function intersection_set(set1, set2) {
+  return is_null(set1) || is_null(set2)
+        ? null
+        : is_element_of_set(head(set1), set2)
+        ? pair(head(set1), intersection_set(tail(set1), set2))
+        : intersection_set(tail(set1), set2);
+}
+```
+
 
 ## Reference
 
