@@ -2575,7 +2575,43 @@ function intersection_set(set1, set2) {
         : intersection_set(tail(set1), set2);
 }
 ```
+#### Sets as ordered lists
+One way to speed up our set operations is to change the representation so that the set elements are listed in increasing order. To do this, we need some way to compare two objects so that we can say which is bigger. For example, we could compare strings lexicographically, or we could agree on some method for assigning a unique number to an object and then compare the elements by comparing the corresponding numbers. To keep our discussion simple, we will consider only the case where the set elements are numbers, so that we can compare elements using > and <. We will represent a set of numbers by listing its elements in increasing order. Whereas our first representation above allowed us to represent the set {1,3,6,10} by listing the elements in any order, our new representation allows only the list list(1, 3, 6, 10).
 
+One advantage of ordering shows up in is_element_of_set: In checking for the presence of an item, we no longer have to scan the entire set. If we reach a set element that is larger than the item we are looking for, then we know that the item is not in the set:
+``` js
+function is_element_of_set(x, set) {
+  return is_null(set)
+        ? false
+        : x === head(set)
+        ? true
+        : x < head(set)
+        ? false
+        : // x > head(set)
+          is_element_of_set(x, tail(set));
+}
+```
+How many steps does this save? In the worst case, the item we are looking for may be the largest one in the set, so the number of steps is the same as for the unordered representation. On the other hand, if we search for items of many different sizes we can expect that sometimes we will be able to stop searching at a point near the beginning of the list and that other times we will still need to examine most of the list. On the average we should expect to have to examine about half of the items in the set.
+
+We obtain a more impressive speedup with intersection_set. In the unordered representation this operation required Θ(n^2) steps, because we performed a complete scan of set2 for each element of set1. But with the ordered representation, we can use a more clever method. Begin by comparing the initial elements, x1 and x2, of the two sets. If x1 equals x2, then that gives an element of the intersection, and the rest of the intersection is the intersection of the tails of the two sets. Suppose, however, that x1 is less than x2. Since x2 is the smallest element in set2, we can immediately conclude that x1 cannot appear anywhere in set2 and hence is not in the intersection. Hence, the intersection is equal to the intersection of set2 with the tail of set1. Similarly, if x2 is less than x1, then the intersection is given by the intersection of set1 with the tail of set2.
+
+``` js
+function intersection_set(set1, set2) {
+  if (is_null(set1) || is_null(set2))) {
+    return null;
+  } esle {
+    const x1 = head(set1);
+    const x2 = head(set2);
+    return x1 === x2
+          ? pair(x1, intersection_set(tail(set1), tail(set2))
+          : x1 < x2
+          ? intersection_set(tail(set1), set2)
+          : // x2 < x1
+            intersection_set(set1, tail(set2));
+  }
+}
+```
+To estimate the number of steps required by this process, observe that at each step we reduce the intersection problem to computing intersections of smaller sets—removing the first element from set1 or set2 or both. Thus, the number of steps required is at most the sum of the sizes of set1 and set2, rather than the product of the sizes as with the unordered representation. 
 
 ## Reference
 
