@@ -2613,6 +2613,68 @@ function intersection_set(set1, set2) {
 ```
 To estimate the number of steps required by this process, observe that at each step we reduce the intersection problem to computing intersections of smaller sets—removing the first element from set1 or set2 or both. Thus, the number of steps required is at most the sum of the sizes of set1 and set2, rather than the product of the sizes as with the unordered representation. 
 
+#### Sets as binary trees
+We can do better than the ordered-list representation by arranging the set elements in the form of a tree. Each node of the tree holds one element of the set, called the "entry" at that node, and a link to each of two other (possibly empty) nodes. The "left" link points to elements smaller than the one at the node, and the "right" link to elements greater than the one at the node.
+The same set may be represented by a tree in a number of different ways. The only thing we require for a valid representation is that all elements in the left subtree be smaller than the node entry and that all elements in the right subtree be larger.
+
+![](chap2/figure-2.3.3-2.16.png)
+
+The advantage of the tree representation is this: Suppose we want to check whether a number $ x $ is contained in a set. We begin by comparing $x$ with the entry in the top node. If $x$ is less than this, we know that we need only search the left subtree; if $x$ is greater, we need only search the right subtree. Now, if the tree is "balanced," each of these subtrees will be about half the size of the original. Thus, in one step we have reduced the problem of searching a tree of size nn to searching a tree of size $n/2$.
+We can represent trees by using lists. Each node will be a list of three items: the entry at the node, the left subtree, and the right subtree. A left or a right subtree of the empty list will indicate that there is no subtree connected there. 
+``` js
+function entry(tree) {
+  return head(tree);
+}
+
+function left_branch(tree) {
+  return head(tail(tree));
+}
+
+function right_branch(tree) {
+  return head(tail(tail(tree));
+}
+
+function make_tree(entry, left, right) {
+  return list(entry, left, right);
+}
+```
+Now we can write *is_element_of_set* using the strategy described above:
+
+``` js
+function is_element_of_set(x, set) {
+    return is_null(set) 
+           ? false
+           : x === entry(set) 
+           ? true
+           : x < entry(set)
+           ? is_element_of_set(x, left_branch(set))
+           : // x > entry(set)
+             is_element_of_set(x, right_branch(set));
+}
+```
+To adjoin an item x, we compare x with the node entry to determine whether x should be added to the right or to the left branch, and having adjoined x to the appropriate branch we piece this newly constructed branch together with the original entry and the other branch.If x is equal to the entry, we just return the node. If we are asked to adjoin x to an empty tree, we generate a tree that has x as the entry and empty right and left branches.
+
+``` js
+function adjoin_set(x, set) {
+  return is_null(set)
+          ? make_tree(x, null, null)
+          : x === entry(set)
+          ? set
+          : x < entry(set)
+          ? make_tree(entry(set),
+                      adjoin_set(x, left_branch(set)),
+                      right_branch(set))
+          : // x > entry(set)
+           make_tree(entry(set),
+                      left_branch(set),
+                      adjoin_set(s, right_branch(set)));
+}
+```
+The above claim that searching the tree can be performed in a logarithmic number of steps rests on the assumption that the tree is "balanced," i.e., that the left and the right subtree of every tree have approximately the same number of elements, so that each subtree contains about half the elements of its parent. But how can we be certain that the trees we construct will be balanced? Even if we start with a balanced tree, adding elements with *adjoin_set* may produce an unbalanced result. Since the position of a newly adjoined element depends on how the element compares with the items already in the set, we can expect that if we add elements "randomly" the tree will tend to be balanced on the average.
+But this is not a guarantee. For example, if we start with an empty set and adjoin the numbers 1 through 7 in sequence we end up with the highly unbalanced tree
+![](chap2/figure-2.3.3.-2.17.png)
+In this tree all the left subtrees are empty, so it has no advantage over a simple ordered list. One way to solve this problem is to define an operation that transforms an arbitrary tree into a balanced tree with the same elements.Then we can perform this transformation after every few *adjoin_set* operations to keep our set in balance. 
+
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
