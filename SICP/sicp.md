@@ -2675,6 +2675,22 @@ But this is not a guarantee. For example, if we start with an empty set and adjo
 ![](chap2/figure-2.3.3.-2.17.png)
 In this tree all the left subtrees are empty, so it has no advantage over a simple ordered list. One way to solve this problem is to define an operation that transforms an arbitrary tree into a balanced tree with the same elements.Then we can perform this transformation after every few *adjoin_set* operations to keep our set in balance. 
 
+#### Sets and information retrieval
+We have examined options for using lists to represent sets and have seen how the choice of representation for a data object can have a large impact on the performance of the programs that use the data. Another reason for concentrating on sets is that the techniques discussed here appear again and again in applications involving information retrieval.
+
+Consider a data base containing a large number of individual records, such as the personnel files for a company or the transactions in an accounting system. A typical data-management system spends a large amount of time accessing or modifying the data in the records and therefore requires an efficient method for accessing records. This is done by identifying a part of each record to serve as an identifying key. A key can be anything that uniquely identifies the record. For a personnel file, it might be an employee's ID number. For an accounting system, it might be a transaction number. Whatever the key is, when we define the record as a data structure we should include a key selector function that retrieves the key associated with a given record.
+Now we represent the data base as a set of records. To locate the record with a given key we use a function *lookup*, which takes as arguments a key and a data base and which returns the record that has that key, or false if there is no such record. The function *lookup* is implemented in almost the same way as *is_element_of_set*. For example, if the set of records is implemented as an unordered list, we could use
+``` js
+function lookup(given_key, set_of_records) {
+  return is_null(set_of_records)
+        ? false
+        : equal(given_key, key(head(set_of_records)))
+        ? head(set_of_records)
+        : lookup(given_key, tail(set_of_records));
+}
+```
+Of course, there are better ways to represent large sets than as unordered lists. Information-retrieval systems in which records have to be "randomly accessed" are typically implemented by a tree-based method, such as the binary-tree representation discussed previously. In designing such a system the methodology of data abstraction can be a great help. The designer can create an initial implementation using a simple, straightforward representation such as unordered lists. This will be unsuitable for the eventual system, but it can be useful in providing a "quick and dirty" data base with which to test the rest of the system. Later on, the data representation can be modified to be more sophisticated. If the data base is accessed in terms of abstract selectors and constructors, this change in representation will not require any changes to the rest of the system.
+
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
