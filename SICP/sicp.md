@@ -2750,6 +2750,126 @@ Final merge     {({{A B C D E F G H}} 17)}}
 
 The algorithm does not always specify a unique tree, because there may not be unique smallest-weight nodes at each step. Also, the choice of the order in which the two nodes are merged (i.e., which will be the right branch and which will be the left branch) is arbitrary. 
 
+#### Representing Huffman trees
+
+In the exercises below we will work with a system that uses Huffman trees to encode and decode messages and generates Huffman trees according to the algorithm outlined above. We will begin by discussing how trees are represented.
+
+Leaves of the tree are represented by a list consisting of the string "leaf", the symbol at the leaf, and the weight
+
+```js
+function make_leaf(symbol, weight) {
+  return list("leaf", symbol, weight);
+}
+
+function is_leaf(object) {
+  return head(object) === "leaf";
+}
+
+function symbol_leaf(x) {
+  return head(tail(x));
+}
+
+function weight_leaf(x) {
+  return head(tail(tail(x)));
+}
+```
+A general tree will be a list of a string "code_tree", a left branch, a right branch, a set of symbols, and a weight. The set of symbols will be simply a list of the symbols, rather than some more sophisticated set representation. When we make a tree by merging two nodes, we obtain the weight of the tree as the sum of the weights of the nodes, and the set of symbols as the union of the sets of symbols for the nodes. Since our symbol sets are represented as lists, we can form the union by using the *append* function 
+
+``` js
+function make_code_tree(left, right) {
+  return list("code_tree", left, right, append(symbols(left), symbols(right)), weight(left) + weight(right));
+}
+```
+If we make a tree in this way, we have the following selectors:
+``` js
+function left_branch(tree) {
+  return head(tail(tree));
+}
+
+function right_branch(tree) {
+  return head(tail(tail(tree)));
+}
+
+function symbols(tree) {
+  return is_leaf(tree)
+          ? list(symbol_leaf(tree))
+          : head(tail(tail(tail(tree))));
+}
+
+function weight(tree) {
+  return is_leaf(tree)
+        ? weight_leaf(tree)
+        : head(tail(tail(tail(tail(tree)))));
+}
+```
+The function *symbols* and *weight* must do something slightly different depending on whether they are called with a leaf or a general tree.
+
+#### The decoding function
+The following function implements the decoding algorithm. It takes as arguments a list of zeros and ones, together with a Huffman tree. 
+``` js
+function decode(bits, tree) {
+  function decode_1(bits, current_branch) {
+    if(is_null(bits)) {
+      return nill
+    } else {
+      const next_branch = choose_branch(head(bits),
+                                        current_branch);
+      return is_leaf(next_branch)
+            ? pair(symbol_leaf(next_branch),
+                  decode_1(tail(bits), tree))
+            : decode_1(tail(bits), next_branch);
+    }
+  }
+  return decode_1(bits, tree);
+}
+
+function choose_branch(bit, branch) {
+  return bit === 0
+        ? left_branch(branch)
+        : bit === 1
+        ? right_branch(branch)
+        : error(bit, "bad bit -- choose_branch");
+}
+```
+The function *decode_1* takes two arguments: the list of remaining bits and the current position in the tree. It keeps moving "down" the tree, choosing a left or a right branch according to whether the next bit in the list is a zero or a one. (This is done with the function *choose_branch*.) When it reaches a leaf, it returns the symbol at that leaf as the next symbol in the message by adjoining it to the result of decoding the rest of the message, starting at the root of the tree. Note the error check in the final clause of *choose_branch*, which complains if the function finds something other than a zero or a one in the input data. 
+
+#### Sets of weighted elements
+
+In our representation of trees, each non-leaf node contains a set of symbols, which we have represented as a simple list. However, the tree-generating algorithm discussed above requires that we also work with sets of leaves and trees, successively merging the two smallest items. Since we will be required to repeatedly find the smallest item in a set, it is convenient to use an ordered representation for this kind of set. 
+
+We will represent a set of leaves and trees as a list of elements, arranged in increasing order of weight. 
+The following function for comstructing sets, items are compared by their weights, and the element being added to the set is never already in it
+``` js
+function adjoin_set(x, set) {
+  return is_null(set)
+        ? list(x)
+        : weight(x) < weight(head(set))
+        ? pair(x, set)
+        : pair(head(set), adjoin_set(x, tail(set)));
+}
+```
+The following function takes a list of symbol-frequency pairs such as
+
+``` js
+list(list("A",4), list("B", 2), list("C", 1), list("D", 1))
+```
+and constructs an initial ordered set of leaves, ready to be merged according to the Huffman algorithm.
+
+``` js
+function make_leaf_set(pairs) {
+  if (is_null(pairs)) {
+    return null;
+  } else {
+    const first_pair = head(pairs);
+    return adjoin_set(
+      make_leaf(head(first_pair),        // symbol
+                head(tail(first_pair))), // frequency
+      make_leaf_set(tail(pairs));
+    )
+  }
+}
+```
+
 ## Reference
 
 * [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/books/structure-and-interpretation-computer-programs-1)
